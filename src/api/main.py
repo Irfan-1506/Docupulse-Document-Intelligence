@@ -87,6 +87,11 @@ async def add_process_time_header(request: Request, call_next):
     tags=["telemetry"],
     summary="Service health and queue telemetry",
 )
+@app.get(
+    "/health",
+    tags=["telemetry"],
+    include_in_schema=False,
+)
 def health_check() -> Dict[str, object]:
     """Check API operational health, store statistics, and background queue status."""
     store = get_global_store()
