@@ -1,0 +1,22 @@
+{
+  "file_name": "feed_export_005.csv",
+  "relative_path": "documents/feed_export_005.csv",
+  "doc_type": "CSV_SPREADSHEET",
+  "page_count": 1,
+  "records": [
+    {
+      "invoice_number": "INV-CSV-7005",
+      "invoice_date": "2026-03-25",
+      "supplier_name": "Global Dynamics Semiconductor",
+      "customer_name": "Delta Financial Services",
+      "subtotal": 2200.0,
+      "tax": 220.0,
+      "total": 2420.0,
+      "currency": "USD",
+      "line_items": [],
+      "is_corrupt": false,
+      "expected_page_count": 1
+    }
+  ],
+  "description": "Resilient CSV with custom delimiter and banner row"
+}

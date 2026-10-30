@@ -1,0 +1,1758 @@
+[
+  {
+    "file_name": "invoice_digital_001.pdf",
+    "relative_path": "documents/invoice_digital_001.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1001",
+        "invoice_date": "2026-03-11",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_002.pdf",
+    "relative_path": "documents/invoice_digital_002.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1002",
+        "invoice_date": "2026-03-12",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_003.pdf",
+    "relative_path": "documents/invoice_digital_003.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1003",
+        "invoice_date": "2026-03-13",
+        "supplier_name": "Apex Logistics Corp",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_004.pdf",
+    "relative_path": "documents/invoice_digital_004.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1004",
+        "invoice_date": "2026-03-14",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Beacon Energy Group",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_005.pdf",
+    "relative_path": "documents/invoice_digital_005.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1005",
+        "invoice_date": "2026-03-15",
+        "supplier_name": "Horizon Office Systems Ltd",
+        "customer_name": "Pacific Coast Maritime",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_006.pdf",
+    "relative_path": "documents/invoice_digital_006.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1006",
+        "invoice_date": "2026-03-16",
+        "supplier_name": "Omni Retail Services LLC",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_007.pdf",
+    "relative_path": "documents/invoice_digital_007.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1007",
+        "invoice_date": "2026-03-17",
+        "supplier_name": "Nexus Telecom Partners",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_008.pdf",
+    "relative_path": "documents/invoice_digital_008.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1008",
+        "invoice_date": "2026-03-18",
+        "supplier_name": "Pinnacle Financial Advisory",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_009.pdf",
+    "relative_path": "documents/invoice_digital_009.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1009",
+        "invoice_date": "2026-03-19",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Beacon Energy Group",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_010.pdf",
+    "relative_path": "documents/invoice_digital_010.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1010",
+        "invoice_date": "2026-03-20",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Pacific Coast Maritime",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_011.pdf",
+    "relative_path": "documents/invoice_digital_011.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1011",
+        "invoice_date": "2026-03-21",
+        "supplier_name": "Apex Logistics Corp",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_012.pdf",
+    "relative_path": "documents/invoice_digital_012.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1012",
+        "invoice_date": "2026-03-22",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_013.pdf",
+    "relative_path": "documents/invoice_digital_013.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1013",
+        "invoice_date": "2026-03-23",
+        "supplier_name": "Horizon Office Systems Ltd",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_014.pdf",
+    "relative_path": "documents/invoice_digital_014.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1014",
+        "invoice_date": "2026-03-24",
+        "supplier_name": "Omni Retail Services LLC",
+        "customer_name": "Beacon Energy Group",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_015.pdf",
+    "relative_path": "documents/invoice_digital_015.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1015",
+        "invoice_date": "2026-03-25",
+        "supplier_name": "Nexus Telecom Partners",
+        "customer_name": "Pacific Coast Maritime",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_016.pdf",
+    "relative_path": "documents/invoice_digital_016.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1016",
+        "invoice_date": "2026-03-26",
+        "supplier_name": "Pinnacle Financial Advisory",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_017.pdf",
+    "relative_path": "documents/invoice_digital_017.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1017",
+        "invoice_date": "2026-03-27",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_018.pdf",
+    "relative_path": "documents/invoice_digital_018.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1018",
+        "invoice_date": "2026-03-10",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_019.pdf",
+    "relative_path": "documents/invoice_digital_019.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1019",
+        "invoice_date": "2026-03-11",
+        "supplier_name": "Apex Logistics Corp",
+        "customer_name": "Beacon Energy Group",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_020.pdf",
+    "relative_path": "documents/invoice_digital_020.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1020",
+        "invoice_date": "2026-03-12",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Pacific Coast Maritime",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_021.pdf",
+    "relative_path": "documents/invoice_digital_021.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1021",
+        "invoice_date": "2026-03-13",
+        "supplier_name": "Horizon Office Systems Ltd",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_022.pdf",
+    "relative_path": "documents/invoice_digital_022.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1022",
+        "invoice_date": "2026-03-14",
+        "supplier_name": "Omni Retail Services LLC",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_023.pdf",
+    "relative_path": "documents/invoice_digital_023.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1023",
+        "invoice_date": "2026-03-15",
+        "supplier_name": "Nexus Telecom Partners",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_024.pdf",
+    "relative_path": "documents/invoice_digital_024.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1024",
+        "invoice_date": "2026-03-16",
+        "supplier_name": "Pinnacle Financial Advisory",
+        "customer_name": "Beacon Energy Group",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_025.pdf",
+    "relative_path": "documents/invoice_digital_025.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1025",
+        "invoice_date": "2026-03-17",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Pacific Coast Maritime",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "invoice_digital_026.pdf",
+    "relative_path": "documents/invoice_digital_026.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-2026-1026",
+        "invoice_date": "2026-03-18",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1100.0,
+        "tax": 110.0,
+        "total": 1210.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Enterprise Cloud Computing Standard Tier",
+            "quantity": 5.0,
+            "unit_price": 120.0,
+            "amount": 600.0
+          },
+          {
+            "description": "Dedicated IP Addressing & Firewall Security",
+            "quantity": 2.0,
+            "unit_price": 250.0,
+            "amount": 500.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Clean 1-page digital PDF invoice"
+  },
+  {
+    "file_name": "multi_invoice_001.pdf",
+    "relative_path": "documents/multi_invoice_001.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-MULTI-1A",
+        "invoice_date": "2026-03-01",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 400.0,
+        "tax": 40.0,
+        "total": 440.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Hardware Component Module Alpha",
+            "quantity": 4.0,
+            "unit_price": 100.0,
+            "amount": 400.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      },
+      {
+        "invoice_number": "INV-MULTI-1B",
+        "invoice_date": "2026-03-15",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 600.0,
+        "tax": 60.0,
+        "total": 660.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Software Maintenance Renewal Beta",
+            "quantity": 1.0,
+            "unit_price": 600.0,
+            "amount": 600.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Multi-invoice 2-page PDF document"
+  },
+  {
+    "file_name": "multi_invoice_002.pdf",
+    "relative_path": "documents/multi_invoice_002.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-MULTI-2A",
+        "invoice_date": "2026-03-01",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 400.0,
+        "tax": 40.0,
+        "total": 440.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Hardware Component Module Alpha",
+            "quantity": 4.0,
+            "unit_price": 100.0,
+            "amount": 400.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      },
+      {
+        "invoice_number": "INV-MULTI-2B",
+        "invoice_date": "2026-03-15",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 600.0,
+        "tax": 60.0,
+        "total": 660.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Software Maintenance Renewal Beta",
+            "quantity": 1.0,
+            "unit_price": 600.0,
+            "amount": 600.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Multi-invoice 2-page PDF document"
+  },
+  {
+    "file_name": "multi_invoice_003.pdf",
+    "relative_path": "documents/multi_invoice_003.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-MULTI-3A",
+        "invoice_date": "2026-03-01",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 400.0,
+        "tax": 40.0,
+        "total": 440.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Hardware Component Module Alpha",
+            "quantity": 4.0,
+            "unit_price": 100.0,
+            "amount": 400.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      },
+      {
+        "invoice_number": "INV-MULTI-3B",
+        "invoice_date": "2026-03-15",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 600.0,
+        "tax": 60.0,
+        "total": 660.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Software Maintenance Renewal Beta",
+            "quantity": 1.0,
+            "unit_price": 600.0,
+            "amount": 600.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Multi-invoice 2-page PDF document"
+  },
+  {
+    "file_name": "multi_invoice_004.pdf",
+    "relative_path": "documents/multi_invoice_004.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-MULTI-4A",
+        "invoice_date": "2026-03-01",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 400.0,
+        "tax": 40.0,
+        "total": 440.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Hardware Component Module Alpha",
+            "quantity": 4.0,
+            "unit_price": 100.0,
+            "amount": 400.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      },
+      {
+        "invoice_number": "INV-MULTI-4B",
+        "invoice_date": "2026-03-15",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 600.0,
+        "tax": 60.0,
+        "total": 660.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Software Maintenance Renewal Beta",
+            "quantity": 1.0,
+            "unit_price": 600.0,
+            "amount": 600.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Multi-invoice 2-page PDF document"
+  },
+  {
+    "file_name": "multi_invoice_005.pdf",
+    "relative_path": "documents/multi_invoice_005.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-MULTI-5A",
+        "invoice_date": "2026-03-01",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 400.0,
+        "tax": 40.0,
+        "total": 440.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Hardware Component Module Alpha",
+            "quantity": 4.0,
+            "unit_price": 100.0,
+            "amount": 400.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      },
+      {
+        "invoice_number": "INV-MULTI-5B",
+        "invoice_date": "2026-03-15",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 600.0,
+        "tax": 60.0,
+        "total": 660.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Software Maintenance Renewal Beta",
+            "quantity": 1.0,
+            "unit_price": 600.0,
+            "amount": 600.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Multi-invoice 2-page PDF document"
+  },
+  {
+    "file_name": "multi_invoice_006.pdf",
+    "relative_path": "documents/multi_invoice_006.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-MULTI-6A",
+        "invoice_date": "2026-03-01",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 400.0,
+        "tax": 40.0,
+        "total": 440.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Hardware Component Module Alpha",
+            "quantity": 4.0,
+            "unit_price": 100.0,
+            "amount": 400.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      },
+      {
+        "invoice_number": "INV-MULTI-6B",
+        "invoice_date": "2026-03-15",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 600.0,
+        "tax": 60.0,
+        "total": 660.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Software Maintenance Renewal Beta",
+            "quantity": 1.0,
+            "unit_price": 600.0,
+            "amount": 600.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Multi-invoice 2-page PDF document"
+  },
+  {
+    "file_name": "multi_invoice_007.pdf",
+    "relative_path": "documents/multi_invoice_007.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-MULTI-7A",
+        "invoice_date": "2026-03-01",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 400.0,
+        "tax": 40.0,
+        "total": 440.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Hardware Component Module Alpha",
+            "quantity": 4.0,
+            "unit_price": 100.0,
+            "amount": 400.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      },
+      {
+        "invoice_number": "INV-MULTI-7B",
+        "invoice_date": "2026-03-15",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 600.0,
+        "tax": 60.0,
+        "total": 660.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Software Maintenance Renewal Beta",
+            "quantity": 1.0,
+            "unit_price": 600.0,
+            "amount": 600.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Multi-invoice 2-page PDF document"
+  },
+  {
+    "file_name": "multi_invoice_008.pdf",
+    "relative_path": "documents/multi_invoice_008.pdf",
+    "doc_type": "DIGITAL_PDF",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-MULTI-8A",
+        "invoice_date": "2026-03-01",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 400.0,
+        "tax": 40.0,
+        "total": 440.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Hardware Component Module Alpha",
+            "quantity": 4.0,
+            "unit_price": 100.0,
+            "amount": 400.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      },
+      {
+        "invoice_number": "INV-MULTI-8B",
+        "invoice_date": "2026-03-15",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 600.0,
+        "tax": 60.0,
+        "total": 660.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Software Maintenance Renewal Beta",
+            "quantity": 1.0,
+            "unit_price": 600.0,
+            "amount": 600.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Multi-invoice 2-page PDF document"
+  },
+  {
+    "file_name": "ledger_workbook_001.xlsx",
+    "relative_path": "documents/ledger_workbook_001.xlsx",
+    "doc_type": "EXCEL_WORKBOOK",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-XLS-5001",
+        "invoice_date": "2026-03-22",
+        "supplier_name": "Apex Logistics Corp",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1500.0,
+        "tax": 150.0,
+        "total": 1650.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 2
+      }
+    ],
+    "description": "Multi-sheet Excel workbook with top metadata banner"
+  },
+  {
+    "file_name": "ledger_workbook_002.xlsx",
+    "relative_path": "documents/ledger_workbook_002.xlsx",
+    "doc_type": "EXCEL_WORKBOOK",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-XLS-5002",
+        "invoice_date": "2026-03-22",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1500.0,
+        "tax": 150.0,
+        "total": 1650.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 2
+      }
+    ],
+    "description": "Multi-sheet Excel workbook with top metadata banner"
+  },
+  {
+    "file_name": "ledger_workbook_003.xlsx",
+    "relative_path": "documents/ledger_workbook_003.xlsx",
+    "doc_type": "EXCEL_WORKBOOK",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-XLS-5003",
+        "invoice_date": "2026-03-22",
+        "supplier_name": "Horizon Office Systems Ltd",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1500.0,
+        "tax": 150.0,
+        "total": 1650.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 2
+      }
+    ],
+    "description": "Multi-sheet Excel workbook with top metadata banner"
+  },
+  {
+    "file_name": "ledger_workbook_004.xlsx",
+    "relative_path": "documents/ledger_workbook_004.xlsx",
+    "doc_type": "EXCEL_WORKBOOK",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-XLS-5004",
+        "invoice_date": "2026-03-22",
+        "supplier_name": "Omni Retail Services LLC",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1500.0,
+        "tax": 150.0,
+        "total": 1650.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 2
+      }
+    ],
+    "description": "Multi-sheet Excel workbook with top metadata banner"
+  },
+  {
+    "file_name": "ledger_workbook_005.xlsx",
+    "relative_path": "documents/ledger_workbook_005.xlsx",
+    "doc_type": "EXCEL_WORKBOOK",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-XLS-5005",
+        "invoice_date": "2026-03-22",
+        "supplier_name": "Nexus Telecom Partners",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1500.0,
+        "tax": 150.0,
+        "total": 1650.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 2
+      }
+    ],
+    "description": "Multi-sheet Excel workbook with top metadata banner"
+  },
+  {
+    "file_name": "ledger_workbook_006.xlsx",
+    "relative_path": "documents/ledger_workbook_006.xlsx",
+    "doc_type": "EXCEL_WORKBOOK",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-XLS-5006",
+        "invoice_date": "2026-03-22",
+        "supplier_name": "Pinnacle Financial Advisory",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1500.0,
+        "tax": 150.0,
+        "total": 1650.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 2
+      }
+    ],
+    "description": "Multi-sheet Excel workbook with top metadata banner"
+  },
+  {
+    "file_name": "ledger_workbook_007.xlsx",
+    "relative_path": "documents/ledger_workbook_007.xlsx",
+    "doc_type": "EXCEL_WORKBOOK",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-XLS-5007",
+        "invoice_date": "2026-03-22",
+        "supplier_name": "Acme Cloud Technologies Inc",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1500.0,
+        "tax": 150.0,
+        "total": 1650.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 2
+      }
+    ],
+    "description": "Multi-sheet Excel workbook with top metadata banner"
+  },
+  {
+    "file_name": "ledger_workbook_008.xlsx",
+    "relative_path": "documents/ledger_workbook_008.xlsx",
+    "doc_type": "EXCEL_WORKBOOK",
+    "page_count": 2,
+    "records": [
+      {
+        "invoice_number": "INV-XLS-5008",
+        "invoice_date": "2026-03-22",
+        "supplier_name": "Vertex Supply Chain Solutions",
+        "customer_name": "Enterprise Global Holdings",
+        "subtotal": 1500.0,
+        "tax": 150.0,
+        "total": 1650.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 2
+      }
+    ],
+    "description": "Multi-sheet Excel workbook with top metadata banner"
+  },
+  {
+    "file_name": "feed_export_001.csv",
+    "relative_path": "documents/feed_export_001.csv",
+    "doc_type": "CSV_SPREADSHEET",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-CSV-7001",
+        "invoice_date": "2026-03-25",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 2200.0,
+        "tax": 220.0,
+        "total": 2420.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Resilient CSV with custom delimiter and banner row"
+  },
+  {
+    "file_name": "feed_export_002.csv",
+    "relative_path": "documents/feed_export_002.csv",
+    "doc_type": "CSV_SPREADSHEET",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-CSV-7002",
+        "invoice_date": "2026-03-25",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 2200.0,
+        "tax": 220.0,
+        "total": 2420.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Resilient CSV with custom delimiter and banner row"
+  },
+  {
+    "file_name": "feed_export_003.csv",
+    "relative_path": "documents/feed_export_003.csv",
+    "doc_type": "CSV_SPREADSHEET",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-CSV-7003",
+        "invoice_date": "2026-03-25",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 2200.0,
+        "tax": 220.0,
+        "total": 2420.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Resilient CSV with custom delimiter and banner row"
+  },
+  {
+    "file_name": "feed_export_004.csv",
+    "relative_path": "documents/feed_export_004.csv",
+    "doc_type": "CSV_SPREADSHEET",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-CSV-7004",
+        "invoice_date": "2026-03-25",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 2200.0,
+        "tax": 220.0,
+        "total": 2420.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Resilient CSV with custom delimiter and banner row"
+  },
+  {
+    "file_name": "feed_export_005.csv",
+    "relative_path": "documents/feed_export_005.csv",
+    "doc_type": "CSV_SPREADSHEET",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-CSV-7005",
+        "invoice_date": "2026-03-25",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 2200.0,
+        "tax": 220.0,
+        "total": 2420.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Resilient CSV with custom delimiter and banner row"
+  },
+  {
+    "file_name": "feed_export_006.csv",
+    "relative_path": "documents/feed_export_006.csv",
+    "doc_type": "CSV_SPREADSHEET",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-CSV-7006",
+        "invoice_date": "2026-03-25",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Delta Financial Services",
+        "subtotal": 2200.0,
+        "tax": 220.0,
+        "total": 2420.0,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Resilient CSV with custom delimiter and banner row"
+  },
+  {
+    "file_name": "corrupt_damaged_001.pdf",
+    "relative_path": "documents/corrupt_damaged_001.pdf",
+    "doc_type": "CORRUPTED_BINARY",
+    "page_count": 0,
+    "records": [
+      {
+        "invoice_number": null,
+        "invoice_date": null,
+        "supplier_name": null,
+        "customer_name": null,
+        "subtotal": null,
+        "tax": null,
+        "total": null,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": true,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Corrupted binary with invalid PDF structure"
+  },
+  {
+    "file_name": "corrupt_damaged_002.pdf",
+    "relative_path": "documents/corrupt_damaged_002.pdf",
+    "doc_type": "CORRUPTED_BINARY",
+    "page_count": 0,
+    "records": [
+      {
+        "invoice_number": null,
+        "invoice_date": null,
+        "supplier_name": null,
+        "customer_name": null,
+        "subtotal": null,
+        "tax": null,
+        "total": null,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": true,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Corrupted binary with invalid PDF structure"
+  },
+  {
+    "file_name": "corrupt_damaged_003.pdf",
+    "relative_path": "documents/corrupt_damaged_003.pdf",
+    "doc_type": "CORRUPTED_BINARY",
+    "page_count": 0,
+    "records": [
+      {
+        "invoice_number": null,
+        "invoice_date": null,
+        "supplier_name": null,
+        "customer_name": null,
+        "subtotal": null,
+        "tax": null,
+        "total": null,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": true,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Corrupted binary with invalid PDF structure"
+  },
+  {
+    "file_name": "corrupt_damaged_004.pdf",
+    "relative_path": "documents/corrupt_damaged_004.pdf",
+    "doc_type": "CORRUPTED_BINARY",
+    "page_count": 0,
+    "records": [
+      {
+        "invoice_number": null,
+        "invoice_date": null,
+        "supplier_name": null,
+        "customer_name": null,
+        "subtotal": null,
+        "tax": null,
+        "total": null,
+        "currency": "USD",
+        "line_items": [],
+        "is_corrupt": true,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Corrupted binary with invalid PDF structure"
+  },
+  {
+    "file_name": "scanned_noisy_001.pdf",
+    "relative_path": "documents/scanned_noisy_001.pdf",
+    "doc_type": "SCANNED_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-SCAN-3001",
+        "invoice_date": "2026-03-13",
+        "supplier_name": "Global Dynamics Semiconductor",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 850.0,
+        "tax": 85.0,
+        "total": 935.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Logistics Courier Expedited Delivery",
+            "quantity": 1.0,
+            "unit_price": 850.0,
+            "amount": 850.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Scanned noisy invoice rendered as image PDF"
+  },
+  {
+    "file_name": "scanned_noisy_002.pdf",
+    "relative_path": "documents/scanned_noisy_002.pdf",
+    "doc_type": "SCANNED_PDF",
+    "page_count": 1,
+    "records": [
+      {
+        "invoice_number": "INV-SCAN-3002",
+        "invoice_date": "2026-03-14",
+        "supplier_name": "Horizon Office Systems Ltd",
+        "customer_name": "Summit Industrial Corp",
+        "subtotal": 850.0,
+        "tax": 85.0,
+        "total": 935.0,
+        "currency": "USD",
+        "line_items": [
+          {
+            "description": "Logistics Courier Expedited Delivery",
+            "quantity": 1.0,
+            "unit_price": 850.0,
+            "amount": 850.0
+          }
+        ],
+        "is_corrupt": false,
+        "expected_page_count": 1
+      }
+    ],
+    "description": "Scanned noisy invoice rendered as image PDF"
+  }
+]

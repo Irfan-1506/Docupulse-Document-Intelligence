@@ -203,22 +203,22 @@ class HeuristicExtractor:
         # 7. Subtotal (Zero Fabrication: MUST NOT be computed if missing!)
         subtotal: Optional[float] = None
         if "subtotal" not in uncertain:
-            subtotal_match = re.search(
-                r"\b(?:subtotal|sub\s*total|base\s*amount)\b\s*[:=\-]?\s*(?:[A-Z]{3}|[\$€£])?\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|[0-9]+(?:\.[0-9]{2})?)(?![\?\*!~a-zA-Z])",
+            subtotal_matches = list(re.finditer(
+                r"\b(?:subtotal|sub\s*total|base\s*amount)\b\s*[:=\-]?\s*(?:[A-Z]{3}|[\$€£])?\s*([0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]{2})?|[0-9]+(?:\.[0-9]{2})?)(?![\?\*!~a-zA-Z])",
                 text,
                 re.IGNORECASE,
-            )
-            if subtotal_match:
-                subtotal = cls._clean_number(subtotal_match.group(1))
+            ))
+            if subtotal_matches:
+                subtotal = cls._clean_number(subtotal_matches[-1].group(1))
                 if subtotal is not None:
                     confidences["subtotal"] = 0.95
-                    snippets["subtotal"] = subtotal_match.group(0)
+                    snippets["subtotal"] = subtotal_matches[-1].group(0)
 
         # 8. Tax (Zero Fabrication: MUST NOT be computed if missing!)
         tax: Optional[float] = None
         if "tax" not in uncertain:
             tax_match = re.search(
-                r"\b(?:tax\s*amount|sales\s*tax|vat\s*amount|gst\s*amount|tax|vat|gst)\b(?:\s*\(\d+(?:\.\d+)?%\))?\s*[:=\-]?\s*(?:[A-Z]{3}|[\$€£])?\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|[0-9]+(?:\.[0-9]{2})?)(?![\?\*!~a-zA-Z])",
+                r"\b(?:tax\s*amount|sales\s*tax|vat\s*amount|gst\s*amount|tax|vat|gst)\b(?:\s*\(\d+(?:\.\d+)?%\))?\s*[:=\-]?\s*(?:[A-Z]{3}|[\$€£])?\s*([0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]{2})?|[0-9]+(?:\.[0-9]{2})?)(?![\?\*!~a-zA-Z])",
                 text,
                 re.IGNORECASE,
             )
@@ -231,16 +231,28 @@ class HeuristicExtractor:
         # 9. Total
         total: Optional[float] = None
         if "total" not in uncertain:
-            total_match = re.search(
-                r"\b(?:total\s*due|total\s*amount|grand\s*total|invoice\s*total|total\s*payable|balance\s*due|total)\b\s*[:=\-]?\s*(?:[A-Z]{3}|[\$€£])?\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?|[0-9]+(?:\.[0-9]{2})?)(?![\?\*!~a-zA-Z])",
+            # Check for explicit summary line (e.g. at line start: "Total: $1,100.00" or "Grand Total:")
+            summary_match = re.search(
+                r"(?:^|\n)\s*(?:total\s*due|grand\s*total|invoice\s*total|total\s*payable|balance\s*due|total)\b\s*[:=\-]?\s*(?:[A-Z]{3}|[\$€£])?\s*([0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]{2})?|[0-9]+(?:\.[0-9]{2})?)(?![\?\*!~a-zA-Z])",
                 text,
                 re.IGNORECASE,
             )
-            if total_match:
-                total = cls._clean_number(total_match.group(1))
+            if summary_match:
+                total = cls._clean_number(summary_match.group(1))
                 if total is not None:
                     confidences["total"] = 0.95
-                    snippets["total"] = total_match.group(0)
+                    snippets["total"] = summary_match.group(0).strip()
+            else:
+                total_matches = list(re.finditer(
+                    r"\b(?:total\s*due|total\s*amount|grand\s*total|invoice\s*total|total\s*payable|balance\s*due|total)\b\s*[:=\-]?\s*(?:[A-Z]{3}|[\$€£])?\s*([0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]{2})?|[0-9]+(?:\.[0-9]{2})?)(?![\?\*!~a-zA-Z])",
+                    text,
+                    re.IGNORECASE,
+                ))
+                if total_matches:
+                    total = cls._clean_number(total_matches[-1].group(1))
+                    if total is not None:
+                        confidences["total"] = 0.95
+                        snippets["total"] = total_matches[-1].group(0)
         else:
             confidences["total"] = 0.0
 
@@ -285,6 +297,29 @@ class HeuristicExtractor:
                                 raw_evidence=str(r),
                             )
                         )
+
+        # Fallback: extract line items from structured text bullet lines
+        if not line_items:
+            line_pattern = re.compile(
+                r"(?:^|\n)\s*[-•*]?\s*(?:Item:)?\s*([^\n\|]+?)\s*\|\s*Qty:\s*(\d+(?:\.\d+)?)\s*\|\s*(?:Unit|Price):\s*(?:[A-Z]{3}|[\$€£])?\s*([0-9,]+(?:\.[0-9]{2})?)\s*\|\s*(?:Amount|Total):\s*(?:[A-Z]{3}|[\$€£])?\s*([0-9,]+(?:\.[0-9]{2})?)",
+                re.IGNORECASE,
+            )
+            for m in line_pattern.finditer(text):
+                desc = m.group(1).strip()
+                q = float(m.group(2))
+                u = cls._clean_number(m.group(3)) or 0.0
+                tot = cls._clean_number(m.group(4)) or 0.0
+                line_items.append(
+                    LineItem(
+                        description=desc,
+                        quantity=q,
+                        unit_price=u,
+                        tax_amount=None,
+                        line_total=tot,
+                        confidence=0.95,
+                        raw_evidence=m.group(0).strip(),
+                    )
+                )
 
         # Check missing required fields
         missing = [

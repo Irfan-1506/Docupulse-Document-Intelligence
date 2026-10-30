@@ -1,0 +1,29 @@
+{
+  "file_name": "scanned_noisy_002.pdf",
+  "relative_path": "documents/scanned_noisy_002.pdf",
+  "doc_type": "SCANNED_PDF",
+  "page_count": 1,
+  "records": [
+    {
+      "invoice_number": "INV-SCAN-3002",
+      "invoice_date": "2026-03-14",
+      "supplier_name": "Horizon Office Systems Ltd",
+      "customer_name": "Summit Industrial Corp",
+      "subtotal": 850.0,
+      "tax": 85.0,
+      "total": 935.0,
+      "currency": "USD",
+      "line_items": [
+        {
+          "description": "Logistics Courier Expedited Delivery",
+          "quantity": 1.0,
+          "unit_price": 850.0,
+          "amount": 850.0
+        }
+      ],
+      "is_corrupt": false,
+      "expected_page_count": 1
+    }
+  ],
+  "description": "Scanned noisy invoice rendered as image PDF"
+}

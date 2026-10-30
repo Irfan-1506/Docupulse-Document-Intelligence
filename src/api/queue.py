@@ -63,6 +63,11 @@ class AsyncWorkerQueue(BaseJobQueue):
         """Start worker coroutines."""
         if self._running:
             return
+        # Ensure queue is bound to currently active event loop
+        loop = asyncio.get_running_loop()
+        if getattr(self._queue, "_loop", None) is not loop:
+            self._queue = asyncio.Queue()
+
         self._running = True
         self._workers = [
             asyncio.create_task(self._worker_loop(idx), name=f"doc-worker-{idx}")
@@ -178,6 +183,12 @@ class RedisJobQueue(BaseJobQueue):
 
 
 _global_queue: Optional[BaseJobQueue] = None
+
+
+def reset_global_queue() -> None:
+    """Reset the global background job queue singleton."""
+    global _global_queue
+    _global_queue = None
 
 
 def get_job_queue(store: Optional[DocumentStore] = None) -> BaseJobQueue:

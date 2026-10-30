@@ -1,0 +1,131 @@
+{
+  "report_id": "bench_835d417c4d",
+  "timestamp": "2026-10-30T17:07:30.112201Z",
+  "system_version": "DocuPulse Enterprise AP v4.2",
+  "dataset_name": "golden_set",
+  "total_samples": 54,
+  "field_metrics": {
+    "invoice_number": {
+      "field_name": "invoice_number",
+      "true_positives": 57,
+      "false_positives": 0,
+      "false_negatives": 1,
+      "true_negatives": 0,
+      "precision": 1.0,
+      "recall": 0.9828,
+      "f1_score": 0.9913,
+      "exact_matches": 57,
+      "total_evaluated": 58
+    },
+    "invoice_date": {
+      "field_name": "invoice_date",
+      "true_positives": 58,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "exact_matches": 58,
+      "total_evaluated": 58
+    },
+    "supplier_name": {
+      "field_name": "supplier_name",
+      "true_positives": 58,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "exact_matches": 58,
+      "total_evaluated": 58
+    },
+    "customer_name": {
+      "field_name": "customer_name",
+      "true_positives": 56,
+      "false_positives": 0,
+      "false_negatives": 2,
+      "true_negatives": 0,
+      "precision": 1.0,
+      "recall": 0.9655,
+      "f1_score": 0.9825,
+      "exact_matches": 56,
+      "total_evaluated": 58
+    },
+    "subtotal": {
+      "field_name": "subtotal",
+      "true_positives": 57,
+      "false_positives": 0,
+      "false_negatives": 1,
+      "true_negatives": 0,
+      "precision": 1.0,
+      "recall": 0.9828,
+      "f1_score": 0.9913,
+      "exact_matches": 57,
+      "total_evaluated": 58
+    },
+    "tax": {
+      "field_name": "tax",
+      "true_positives": 57,
+      "false_positives": 0,
+      "false_negatives": 1,
+      "true_negatives": 0,
+      "precision": 1.0,
+      "recall": 0.9828,
+      "f1_score": 0.9913,
+      "exact_matches": 57,
+      "total_evaluated": 58
+    },
+    "total": {
+      "field_name": "total",
+      "true_positives": 58,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "exact_matches": 58,
+      "total_evaluated": 58
+    },
+    "line_items": {
+      "field_name": "line_items",
+      "true_positives": 42,
+      "false_positives": 0,
+      "false_negatives": 2,
+      "true_negatives": 14,
+      "precision": 1.0,
+      "recall": 0.9545,
+      "f1_score": 0.9767,
+      "exact_matches": 56,
+      "total_evaluated": 58
+    }
+  },
+  "macro_precision": 1.0,
+  "macro_recall": 0.9835,
+  "macro_f1": 0.9916,
+  "latency": {
+    "p50_ms": 71.66,
+    "p90_ms": 148.78,
+    "p95_ms": 157.56,
+    "p99_ms": 9295.81,
+    "p95_sec_per_page": 0.1576,
+    "min_ms": 1.13,
+    "max_ms": 10878.35,
+    "mean_ms": 406.96
+  },
+  "operational": {
+    "total_documents": 54,
+    "total_pages": 70,
+    "successful_extractions": 50,
+    "failed_documents": 0,
+    "corrupted_detected_correctly": 4,
+    "straight_through_processing_rate": 0.7241,
+    "human_in_the_loop_rate": 0.2759,
+    "graceful_corruption_rejection_rate": 1.0
+  },
+  "meets_f1_threshold": true,
+  "meets_latency_threshold": true,
+  "production_ready": true
+}

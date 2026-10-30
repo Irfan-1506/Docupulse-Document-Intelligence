@@ -1,0 +1,35 @@
+{
+  "file_name": "invoice_digital_021.pdf",
+  "relative_path": "documents/invoice_digital_021.pdf",
+  "doc_type": "DIGITAL_PDF",
+  "page_count": 1,
+  "records": [
+    {
+      "invoice_number": "INV-2026-1021",
+      "invoice_date": "2026-03-13",
+      "supplier_name": "Horizon Office Systems Ltd",
+      "customer_name": "Enterprise Global Holdings",
+      "subtotal": 1100.0,
+      "tax": 110.0,
+      "total": 1210.0,
+      "currency": "USD",
+      "line_items": [
+        {
+          "description": "Enterprise Cloud Computing Standard Tier",
+          "quantity": 5.0,
+          "unit_price": 120.0,
+          "amount": 600.0
+        },
+        {
+          "description": "Dedicated IP Addressing & Firewall Security",
+          "quantity": 2.0,
+          "unit_price": 250.0,
+          "amount": 500.0
+        }
+      ],
+      "is_corrupt": false,
+      "expected_page_count": 1
+    }
+  ],
+  "description": "Clean 1-page digital PDF invoice"
+}

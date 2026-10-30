@@ -1,0 +1,22 @@
+{
+  "file_name": "ledger_workbook_001.xlsx",
+  "relative_path": "documents/ledger_workbook_001.xlsx",
+  "doc_type": "EXCEL_WORKBOOK",
+  "page_count": 2,
+  "records": [
+    {
+      "invoice_number": "INV-XLS-5001",
+      "invoice_date": "2026-03-22",
+      "supplier_name": "Apex Logistics Corp",
+      "customer_name": "Enterprise Global Holdings",
+      "subtotal": 1500.0,
+      "tax": 150.0,
+      "total": 1650.0,
+      "currency": "USD",
+      "line_items": [],
+      "is_corrupt": false,
+      "expected_page_count": 2
+    }
+  ],
+  "description": "Multi-sheet Excel workbook with top metadata banner"
+}

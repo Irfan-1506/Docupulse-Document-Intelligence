@@ -1,0 +1,22 @@
+{
+  "file_name": "corrupt_damaged_001.pdf",
+  "relative_path": "documents/corrupt_damaged_001.pdf",
+  "doc_type": "CORRUPTED_BINARY",
+  "page_count": 0,
+  "records": [
+    {
+      "invoice_number": null,
+      "invoice_date": null,
+      "supplier_name": null,
+      "customer_name": null,
+      "subtotal": null,
+      "tax": null,
+      "total": null,
+      "currency": "USD",
+      "line_items": [],
+      "is_corrupt": true,
+      "expected_page_count": 1
+    }
+  ],
+  "description": "Corrupted binary with invalid PDF structure"
+}

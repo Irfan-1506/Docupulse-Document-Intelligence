@@ -14,6 +14,14 @@ class ValidationSeverity(str, Enum):
     INFO = "INFO"
 
 
+class ValidationStatus(str, Enum):
+    """High-level processing status for HITL workflow."""
+    AUTO_VERIFIED = "AUTO_VERIFIED"
+    MANUALLY_VERIFIED = "MANUALLY_VERIFIED"
+    NEEDS_MANUAL_REVIEW = "NEEDS_MANUAL_REVIEW"
+    REJECTED_DUPLICATE = "REJECTED_DUPLICATE"
+
+
 class ValidationRuleCode(str, Enum):
     """Distinct validation rule identifiers aligned with the frontend HITL workbench."""
     MISSING_REQUIRED_FIELD = "MISSING_REQUIRED_FIELD"
