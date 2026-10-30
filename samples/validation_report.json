@@ -1,0 +1,89 @@
+{
+  "total_records_evaluated": 1,
+  "auto_verified_count": 0,
+  "manual_review_count": 1,
+  "duplicate_count": 0,
+  "cross_verified_exact_matches": 0,
+  "cross_verified_variances": 0,
+  "results": [
+    {
+      "record_id": "958787f0-5eea-4564-a9ce-470097e8f3a7",
+      "source_document_id": "293e7f1f-e4f2-4f51-8d28-74b63d58bc18",
+      "invoice_number": null,
+      "is_valid": false,
+      "validation_status": "NEEDS_MANUAL_REVIEW",
+      "requires_manual_review": true,
+      "issues": [
+        {
+          "rule_code": "MISSING_REQUIRED_FIELD",
+          "severity": "ERROR",
+          "field_name": "invoice_number",
+          "message": "Mandatory financial field 'invoice_number' is missing or null.",
+          "expected_value": "Non-null value",
+          "actual_value": "null",
+          "variance": null
+        },
+        {
+          "rule_code": "MISSING_REQUIRED_FIELD",
+          "severity": "ERROR",
+          "field_name": "invoice_date",
+          "message": "Mandatory financial field 'invoice_date' is missing or null.",
+          "expected_value": "Non-null value",
+          "actual_value": "null",
+          "variance": null
+        },
+        {
+          "rule_code": "MISSING_REQUIRED_FIELD",
+          "severity": "ERROR",
+          "field_name": "total",
+          "message": "Mandatory financial field 'total' is missing or null.",
+          "expected_value": "Non-null value",
+          "actual_value": "null",
+          "variance": null
+        },
+        {
+          "rule_code": "MISSING_REQUIRED_FIELD",
+          "severity": "ERROR",
+          "field_name": "currency",
+          "message": "Mandatory financial field 'currency' is missing or null.",
+          "expected_value": "Non-null value",
+          "actual_value": "null",
+          "variance": null
+        },
+        {
+          "rule_code": "MISSING_REQUIRED_FIELD",
+          "severity": "WARNING",
+          "field_name": "subtotal",
+          "message": "Recommended field 'subtotal' is unstated on the source document.",
+          "expected_value": "Recommended",
+          "actual_value": "null",
+          "variance": null
+        },
+        {
+          "rule_code": "MISSING_REQUIRED_FIELD",
+          "severity": "WARNING",
+          "field_name": "tax",
+          "message": "Recommended field 'tax' is unstated on the source document.",
+          "expected_value": "Recommended",
+          "actual_value": "null",
+          "variance": null
+        },
+        {
+          "rule_code": "MISSING_REQUIRED_FIELD",
+          "severity": "WARNING",
+          "field_name": "customer_name",
+          "message": "Recommended field 'customer_name' is unstated on the source document.",
+          "expected_value": "Recommended",
+          "actual_value": "null",
+          "variance": null
+        }
+      ],
+      "cross_verification": null,
+      "computed_metrics": {
+        "computed_line_sum": null,
+        "computed_total": null,
+        "total_variance": null
+      }
+    }
+  ]
+}

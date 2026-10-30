@@ -1,0 +1,56 @@
+[
+  {
+    "document_id": "0c919624-50b4-47b5-bfe1-3763ee1d58a8",
+    "file_name": "earnings.pdf",
+    "total_invoices_detected": 1,
+    "records": [
+      {
+        "record_id": "e6999b12-5425-4232-ad9c-666e7742c0a2",
+        "source_document_id": "0c919624-50b4-47b5-bfe1-3763ee1d58a8",
+        "page_range_or_sheet": "page 1",
+        "invoice_number": null,
+        "invoice_date": null,
+        "supplier_name": "ACME HOLDINGS FINANCIAL OVERVIEW 2026",
+        "customer_name": null,
+        "subtotal": null,
+        "tax": null,
+        "total": null,
+        "currency": null,
+        "line_items": [],
+        "field_confidences": {
+          "supplier_name": 0.85
+        },
+        "raw_evidence_snippets": {
+          "supplier_name": "ACME HOLDINGS FINANCIAL OVERVIEW 2026"
+        },
+        "uncertain_fields": [],
+        "missing_required_fields": [
+          "invoice_date",
+          "invoice_number",
+          "total"
+        ],
+        "extraction_warnings": []
+      }
+    ],
+    "model_used": "heuristic_fallback:gemini-2.5-flash",
+    "processing_time_ms": 3.18,
+    "telemetry": {
+      "provider": "heuristic_fallback",
+      "concurrency": 5,
+      "verified_grounding": true
+    }
+  },
+  {
+    "document_id": "6b98c300-e15d-451b-a18c-0330707c243e",
+    "file_name": "quarterly_metrics.csv",
+    "total_invoices_detected": 0,
+    "records": [],
+    "model_used": "heuristic_fallback:gemini-2.5-flash",
+    "processing_time_ms": 3.53,
+    "telemetry": {
+      "provider": "heuristic_fallback",
+      "concurrency": 5,
+      "verified_grounding": true
+    }
+  }
+]

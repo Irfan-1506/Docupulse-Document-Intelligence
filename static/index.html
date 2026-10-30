@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="web_dashboard" name="shell-type"/>
+  <title>DocuPulse Enterprise AP · Document Intelligence Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .view-panel.hidden { display: none !important; }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#3f465c",
+            "on-primary-fixed-variant": "#3323cc",
+            "primary-fixed": "#e2dfff",
+            "on-secondary-fixed": "#131b2e",
+            "inverse-on-surface": "#eaf1ff",
+            "on-secondary-container": "#5c647a",
+            "surface": "#f8f9ff",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#006e4b",
+            "secondary-fixed": "#dae2fd",
+            "on-error": "#ffffff",
+            "tertiary-fixed-dim": "#4edea3",
+            "secondary-container": "#dae2fd",
+            "inverse-surface": "#213145",
+            "surface-bright": "#f8f9ff",
+            "surface-container-high": "#dce9ff",
+            "error-container": "#ffdad6",
+            "on-tertiary-container": "#67f4b7",
+            "background": "#f8f9ff",
+            "tertiary-fixed": "#6ffbbe",
+            "surface-variant": "#d3e4fe",
+            "on-surface-variant": "#464555",
+            "on-tertiary-fixed": "#002113",
+            "primary-container": "#4f46e5",
+            "on-primary-container": "#dad7ff",
+            "secondary-fixed-dim": "#bec6e0",
+            "on-surface": "#0b1c30",
+            "primary-fixed-dim": "#c3c0ff",
+            "surface-container-lowest": "#ffffff",
+            "outline-variant": "#c7c4d8",
+            "tertiary": "#005338",
+            "surface-container-low": "#eff4ff",
+            "on-secondary": "#ffffff",
+            "secondary": "#565e74",
+            "error": "#ba1a1a",
+            "on-background": "#0b1c30",
+            "surface-tint": "#4d44e3",
+            "on-tertiary-fixed-variant": "#005236",
+            "outline": "#777587",
+            "inverse-primary": "#c3c0ff",
+            "on-error-container": "#93000a",
+            "surface-container": "#e5eeff",
+            "primary": "#3525cd",
+            "on-primary-fixed": "#0f0069",
+            "surface-container-highest": "#d3e4fe",
+            "surface-dim": "#cbdbf5"
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            full: "0.75rem"
+          },
+          spacing: {
+            "margin-desktop": "1.5rem",
+            "space-lg": "1rem",
+            "space-xl": "1.5rem",
+            "space-xs": "0.25rem",
+            "gutter-desktop": "1.25rem",
+            gutter: "1rem",
+            "space-md": "0.75rem",
+            "space-sm": "0.5rem",
+            margin: "1rem"
+          },
+          fontFamily: {
+            "body-md": ["Inter"],
+            "body-md-medium": ["Inter"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "label-numeric-sm": ["JetBrains Mono"],
+            "micro-badge": ["JetBrains Mono"],
+            "label-numeric-lg": ["JetBrains Mono"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "label-numeric-md": ["JetBrains Mono"]
+          },
+          fontSize: {
+            "body-md": ["0.875rem", { lineHeight: "1.25rem", letterSpacing: "-0.011em", fontWeight: "400" }],
+            "body-md-medium": ["0.875rem", { lineHeight: "1.25rem", letterSpacing: "-0.011em", fontWeight: "500" }],
+            "headline-lg": ["1.25rem", { lineHeight: "1.75rem", letterSpacing: "-0.02em", fontWeight: "600" }],
+            "headline-xl": ["1.75rem", { lineHeight: "2.25rem", letterSpacing: "-0.025em", fontWeight: "700" }],
+            "label-numeric-sm": ["0.6875rem", { lineHeight: "1rem", letterSpacing: "0em", fontWeight: "500" }],
+            "micro-badge": ["0.625rem", { lineHeight: "0.875rem", letterSpacing: "0.04em", fontWeight: "700" }],
+            "label-numeric-lg": ["1rem", { lineHeight: "1.25rem", letterSpacing: "-0.02em", fontWeight: "600" }],
+            "headline-sm": ["1rem", { lineHeight: "1.5rem", letterSpacing: "-0.015em", fontWeight: "600" }],
+            "body-sm": ["0.75rem", { lineHeight: "1.125rem", letterSpacing: "-0.006em", fontWeight: "400" }],
+            "label-numeric-md": ["0.8125rem", { lineHeight: "1.125rem", letterSpacing: "-0.01em", fontWeight: "500" }]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="fixed left-0 top-0 h-full w-64 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="flex flex-col">
+      <!-- Brand & Version -->
+      <div class="h-14 px-space-md flex items-center justify-between bg-inverse-surface border-b border-surface-container-highest/10">
+        <div class="flex items-center gap-space-sm">
+          <div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary">
+            <span class="material-symbols-outlined text-xl">auto_stories</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-headline-sm text-headline-sm text-on-primary tracking-tight leading-none">DocuPulse</span>
+            <span class="font-micro-badge text-micro-badge text-tertiary-fixed tracking-wider uppercase">Enterprise AP</span>
+          </div>
+        </div>
+        <span class="font-micro-badge text-micro-badge bg-tertiary-container text-on-tertiary-container px-space-xs py-0.5 rounded-lg">v4.2</span>
+      </div>
+
+      <!-- Workspace Selector -->
+      <div class="px-space-md py-space-sm bg-inverse-surface">
+        <div class="bg-surface-container-highest/10 p-space-sm rounded-lg flex items-center justify-between cursor-pointer hover:bg-surface-container-highest/20 transition-colors">
+          <div class="flex flex-col min-w-0 pr-space-xs">
+            <span class="font-micro-badge text-micro-badge text-outline-variant uppercase tracking-wider">Workspace</span>
+            <span class="font-body-sm text-body-sm text-inverse-on-surface truncate">Acme Corp - Global Treasury &amp; Audit</span>
+          </div>
+          <span class="material-symbols-outlined text-outline-variant text-sm flex-shrink-0">unfold_more</span>
+        </div>
+      </div>
+
+      <!-- Navigation Section -->
+      <div class="px-space-md pt-space-md">
+        <span class="font-micro-badge text-micro-badge text-outline-variant uppercase tracking-wider px-space-xs">Operations Ledger</span>
+      </div>
+      <nav class="flex flex-col gap-space-xs px-space-sm mt-space-xs" id="sidebar-nav">
+        <a class="nav-item flex items-center gap-space-sm px-space-md py-space-xs rounded-lg transition-colors bg-primary-container text-on-primary font-body-md-medium" data-path="ingestion-pipeline" href="#ingestion-pipeline">
+          <span class="material-symbols-outlined text-lg">dynamic_feed</span>
+          <span class="font-body-md text-body-md truncate">Ingestion Pipeline</span>
+        </a>
+        <a class="nav-item flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-outline-variant hover:bg-inverse-surface hover:text-inverse-on-surface transition-colors" data-path="hitl-workbench" href="#hitl-workbench">
+          <span class="material-symbols-outlined text-lg">fact_check</span>
+          <span class="font-body-md text-body-md truncate">HITL Workbench</span>
+        </a>
+        <a class="nav-item flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-outline-variant hover:bg-inverse-surface hover:text-inverse-on-surface transition-colors" data-path="cross-verification" href="#cross-verification">
+          <span class="material-symbols-outlined text-lg">rule</span>
+          <span class="font-body-md text-body-md truncate">Cross-Verification</span>
+        </a>
+        <a class="nav-item flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-outline-variant hover:bg-inverse-surface hover:text-inverse-on-surface transition-colors" data-path="search-explorer" href="#search-explorer">
+          <span class="material-symbols-outlined text-lg">manage_search</span>
+          <span class="font-body-md text-body-md truncate">Search Explorer</span>
+        </a>
+        <a class="nav-item flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-outline-variant hover:bg-inverse-surface hover:text-inverse-on-surface transition-colors" data-path="system-telemetry" href="#system-telemetry">
+          <span class="material-symbols-outlined text-lg">monitoring</span>
+          <span class="font-body-md text-body-md truncate">System Telemetry</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Cluster Telemetry Widget -->
+    <div class="p-space-md bg-inverse-surface flex flex-col gap-space-xs border-t border-surface-container-highest/10">
+      <div class="bg-surface-container-highest/10 p-space-sm rounded-lg flex flex-col gap-space-xs">
+        <div class="flex items-center justify-between">
+          <span class="font-micro-badge text-micro-badge text-outline-variant uppercase">Runtime Cluster</span>
+          <span class="font-label-numeric-sm text-label-numeric-sm text-tertiary-fixed flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed animate-pulse"></span>Healthy
+          </span>
+        </div>
+        <div class="font-label-numeric-sm text-label-numeric-sm text-inverse-on-surface flex items-center justify-between">
+          <span>Backend REST API</span>
+          <span class="text-tertiary-fixed font-semibold" id="api-status-badge">FastAPI 1.0</span>
+        </div>
+        <div class="font-label-numeric-sm text-label-numeric-sm text-inverse-on-surface flex items-center justify-between">
+          <span>Database / Vector</span>
+          <span class="text-tertiary-fixed" id="db-status-badge">pgvector Synced</span>
+        </div>
+      </div>
+      <div class="pt-space-xs flex items-center justify-between text-outline-variant">
+        <span class="font-micro-badge text-micro-badge" id="host-node-label">DocuPulse v4.2 Engine</span>
+        <span class="material-symbols-outlined text-sm cursor-pointer hover:text-inverse-on-surface transition-colors" onclick="alert('DocuPulse Enterprise AP v4.2. API connected at /api/v1.')">help</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN BODY AREA -->
+  <div class="pl-64">
+    <!-- TOP HEADER -->
+    <header class="fixed top-0 left-64 right-0 h-14 bg-surface-container-lowest/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+      <div class="w-full h-14 px-gutter-desktop flex items-center justify-between">
+        <div class="flex items-center gap-space-md flex-1 max-w-lg">
+          <div class="relative w-full flex items-center">
+            <span class="material-symbols-outlined absolute left-space-md text-outline text-lg pointer-events-none">search</span>
+            <input class="w-full h-8 pl-9 pr-14 bg-surface-container-low text-on-surface placeholder:text-outline font-body-sm text-body-sm rounded-lg outline-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container transition-all" id="header-global-search" placeholder="Search financial entities, invoices, GL codes, hashes..." type="text" onkeydown="if(event.key==='Enter'){navigateTo('search-explorer'); setQuery(this.value);}"/>
+            <span class="absolute right-space-sm font-label-numeric-sm text-label-numeric-sm bg-surface-container px-space-xs py-0.5 rounded text-on-surface-variant pointer-events-none">⌘K</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-space-md">
+          <div class="flex items-center gap-space-xs bg-tertiary-container/10 px-space-md py-1 rounded-lg">
+            <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+            <span class="font-micro-badge text-micro-badge uppercase text-tertiary font-bold tracking-wider">STP Rate</span>
+            <span class="font-label-numeric-md text-label-numeric-md text-tertiary font-bold" id="stp-rate-display">91.4%</span>
+          </div>
+          <div class="relative flex items-center">
+            <button class="p-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-lg transition-colors">
+              <span class="material-symbols-outlined text-xl">notifications</span>
+            </button>
+            <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span>
+          </div>
+          <div class="flex items-center gap-space-sm pl-space-xs">
+            <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-sm">
+              EV
+            </div>
+            <div class="flex flex-col text-left">
+              <span class="font-body-md-medium text-body-md-medium text-on-surface leading-tight">Elena Vance</span>
+              <span class="font-micro-badge text-micro-badge text-on-surface-variant leading-none">VP Financial Controller</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="w-full pt-14 px-gutter-desktop bg-surface min-h-screen">
+      <!-- =================================================================== -->
+      <!-- VIEW 1: INGESTION PIPELINE & QUEUE MONITOR                          -->
+      <!-- =================================================================== -->
+      <div class="view-panel flex flex-col w-full pb-space-xl" id="view-ingestion-pipeline">
+        <!-- Top Page Header -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md py-space-md mb-space-sm">
+          <div class="flex flex-col gap-space-xs">
+            <div class="flex items-center gap-space-sm">
+              <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Ingestion Pipeline &amp; Queue Monitor</h1>
+              <div class="flex items-center gap-1.5 px-space-sm py-0.5 rounded-lg bg-surface-container-high text-tertiary font-micro-badge text-micro-badge">
+                <span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
+                <span>Live Stream Active • Ingestion Rate: 12.8 docs/s</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-space-md text-on-surface-variant font-body-sm text-body-sm">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">schedule</span>
+                Auto-refresh in <span class="font-label-numeric-sm text-label-numeric-sm text-on-surface font-semibold" id="refreshTimer">4s</span>
+              </span>
+              <span class="text-outline-variant">•</span>
+              <span class="font-label-numeric-sm text-label-numeric-sm">Cluster Latency: <span class="text-tertiary font-bold">18ms</span></span>
+              <span class="text-outline-variant">•</span>
+              <span class="font-label-numeric-sm text-label-numeric-sm">Engine: <span class="text-primary font-bold">DocuPulse v4.2 OCR-Core</span></span>
+            </div>
+          </div>
+          <!-- Actions -->
+          <div class="flex items-center gap-space-sm">
+            <button class="flex items-center gap-1 px-space-md py-1.5 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-body-sm text-body-sm shadow-sm" onclick="fetchLiveJobs()">
+              <span class="material-symbols-outlined text-sm">refresh</span>
+              <span>Refresh Now</span>
+            </button>
+            <button class="flex items-center gap-1 px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary font-body-md-medium text-body-md-medium hover:bg-primary shadow-sm hover:shadow-md transition-all active:scale-[0.98]" onclick="document.getElementById('uploadDropzone').scrollIntoView({behavior: 'smooth'})">
+              <span class="material-symbols-outlined text-base">cloud_upload</span>
+              <span>Upload Batch</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Top KPI Ribbon -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md mb-space-lg">
+          <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
+              <span class="font-micro-badge text-micro-badge text-on-surface-variant uppercase tracking-wider">Processed Today</span>
+              <span class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container-high text-tertiary font-label-numeric-sm text-label-numeric-sm font-bold">
+                <span class="material-symbols-outlined text-xs">trending_up</span>+14.2% DoD
+              </span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+              <div>
+                <div class="font-label-numeric-lg text-label-numeric-lg text-on-surface font-bold tracking-tight" id="kpi-processed-today">2,840 <span class="text-on-surface-variant font-normal text-xs">files</span></div>
+                <div class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">14,920 audited pages</div>
+              </div>
+              <svg class="w-16 h-8 text-primary-container" fill="none" viewbox="0 0 64 32">
+                <path d="M2 28L12 24L22 26L32 18L42 20L52 10L62 4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                <path d="M2 28L12 24L22 26L32 18L42 20L52 10L62 4V32H2Z" fill="currentColor" fill-opacity="0.08"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
+              <span class="font-micro-badge text-micro-badge text-on-surface-variant uppercase tracking-wider">Straight-Through Rate (STP)</span>
+              <span class="px-1.5 py-0.5 rounded bg-tertiary-container/10 text-tertiary font-label-numeric-sm text-label-numeric-sm font-bold">+2.1% beat</span>
+            </div>
+            <div class="mt-2">
+              <div class="flex items-baseline gap-1">
+                <span class="font-label-numeric-lg text-label-numeric-lg text-tertiary font-bold">91.4%</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">auto-cleared</span>
+              </div>
+              <div class="w-full bg-surface-container-high h-1.5 rounded-full mt-2 overflow-hidden">
+                <div class="bg-tertiary h-full rounded-full" style="width: 91.4%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
+              <span class="font-micro-badge text-micro-badge text-on-surface-variant uppercase tracking-wider">Needs Manual Review</span>
+              <span class="flex items-center gap-1 px-1.5 py-0.5 rounded bg-error-container text-on-error-container font-label-numeric-sm text-label-numeric-sm font-semibold">
+                <span class="w-1.5 h-1.5 rounded-full bg-error"></span><span id="kpi-flagged-count">42</span> Flagged
+              </span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+              <div>
+                <div class="font-label-numeric-lg text-label-numeric-lg text-error font-bold tracking-tight"><span id="kpi-flagged-count-sub">42</span> <span class="text-on-surface-variant font-normal text-xs">items</span></div>
+                <div class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">26 math discrepancies • 16 low OCR</div>
+              </div>
+              <span class="material-symbols-outlined text-outline text-2xl">pending_actions</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
+              <span class="font-micro-badge text-micro-badge text-on-surface-variant uppercase tracking-wider">Mean Processing Speed</span>
+              <span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-numeric-sm text-label-numeric-sm">Workers: 4 Active</span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+              <div>
+                <div class="font-label-numeric-lg text-label-numeric-lg text-on-surface font-bold tracking-tight">1.4s <span class="text-on-surface-variant font-normal text-xs">/ page</span></div>
+                <div class="font-label-numeric-sm text-label-numeric-sm text-tertiary flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>Queue Latency 18ms
+                </div>
+              </div>
+              <div class="flex items-center gap-0.5 text-tertiary">
+                <span class="material-symbols-outlined text-xl">bolt</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Multi-Format Batch Ingestion Dropzone -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg mb-space-lg" id="uploadDropzone">
+          <div class="flex flex-col lg:flex-row gap-space-lg items-stretch">
+            <!-- Interactive Drop Box -->
+            <div class="flex-1 bg-surface-container-low rounded-lg p-space-lg flex flex-col items-center justify-center text-center group cursor-pointer hover:bg-surface-container transition-all relative overflow-hidden" id="drop-box"
+                 ondragleave="this.classList.remove('bg-surface-container-high');"
+                 ondragover="event.preventDefault(); this.classList.add('bg-surface-container-high');"
+                 ondrop="handleDropUpload(event)">
+              <div class="w-12 h-12 rounded-xl bg-primary-container/10 flex items-center justify-center text-primary mb-space-sm group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-2xl">upload_file</span>
+              </div>
+              <span class="font-headline-sm text-headline-sm text-on-surface tracking-tight" id="drop-label">Drag &amp; drop document batches or click to upload</span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant mt-1 max-w-md">Accepts high-volume enterprise archives up to 250MB per batch. Automatically deskews, segments, and parses multi-page books.</span>
+              <div class="flex flex-wrap items-center justify-center gap-1.5 mt-space-md">
+                <span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-label-numeric-sm text-label-numeric-sm font-semibold">PDF (1,000+ pgs)</span>
+                <span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-label-numeric-sm text-label-numeric-sm font-semibold">TIFF</span>
+                <span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-label-numeric-sm text-label-numeric-sm font-semibold">PNG / JPG</span>
+                <span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-label-numeric-sm text-label-numeric-sm font-semibold">XLSX / XLS</span>
+                <span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-label-numeric-sm text-label-numeric-sm font-semibold">CSV</span>
+              </div>
+              <input class="absolute inset-0 opacity-0 cursor-pointer" id="file-input-element" multiple="" onchange="handleFileInput(this.files)" type="file"/>
+            </div>
+            <!-- Ingestion Configuration Controls -->
+            <div class="lg:w-80 flex flex-col justify-between gap-space-md bg-surface-container-lowest p-space-md rounded-lg border border-surface-container">
+              <div class="flex flex-col gap-space-sm">
+                <div class="flex items-center justify-between">
+                  <span class="font-micro-badge text-micro-badge uppercase text-on-surface-variant tracking-wider">Parsing Engine Preset</span>
+                  <span class="font-micro-badge text-micro-badge text-tertiary font-bold">FP-16 Accelerated</span>
+                </div>
+                <div class="relative">
+                  <select class="w-full h-8 px-space-sm bg-surface-container-low text-on-surface font-body-sm text-body-sm rounded-lg outline-none appearance-none cursor-pointer focus:bg-surface-container transition-all pr-8" id="opt-parser-preset">
+                    <option value="gemini" selected="">DocuPulse Multi-Modal v4.2 (Standard)</option>
+                    <option value="heuristic_fallback">Deterministic Heuristic Fallback (Fast)</option>
+                    <option value="forensic">High-Recall Forensic Audit v4.1</option>
+                  </select>
+                  <span class="material-symbols-outlined absolute right-2 top-2 text-on-surface-variant pointer-events-none text-base">expand_more</span>
+                </div>
+                <!-- Toggles -->
+                <div class="flex flex-col gap-space-sm mt-space-xs">
+                  <label class="flex items-start gap-space-sm cursor-pointer select-none">
+                    <input checked="" class="mt-0.5 w-4 h-4 rounded text-primary-container bg-surface-container-low focus:ring-0 cursor-pointer" id="chk-auto-cross" type="checkbox"/>
+                    <div class="flex flex-col">
+                      <span class="font-body-sm text-body-sm text-on-surface font-medium leading-tight">Auto-Run Cross-Verification</span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">Match against ERP &amp; GL master ledger in real-time</span>
+                    </div>
+                  </label>
+                  <label class="flex items-start gap-space-sm cursor-pointer select-none">
+                    <input checked="" class="mt-0.5 w-4 h-4 rounded text-primary-container bg-surface-container-low focus:ring-0 cursor-pointer" id="chk-force-ocr" type="checkbox"/>
+                    <div class="flex flex-col">
+                      <span class="font-body-sm text-body-sm text-on-surface font-medium leading-tight">Force OCR Enhancement</span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">Enforce OpenCV CLAHE &amp; Deskew pipeline</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="flex flex-col gap-1.5 pt-space-sm">
+                <button class="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm hover:bg-surface-container transition-colors" onclick="alert('Connected to Enterprise Lakehouse / Cloud Storage')">
+                  <span class="material-symbols-outlined text-sm">cloud</span>
+                  <span>Connect Cloud Storage (S3 / GCP / Azure)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time Processing Queue Table Container -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+          <div class="p-space-md bg-surface-container-lowest flex flex-col md:flex-row md:items-center justify-between gap-space-md border-b border-surface-container">
+            <div class="flex items-center gap-1 overflow-x-auto pb-1 md:pb-0" id="queueTabs">
+              <button class="queue-tab-btn px-space-md py-1 rounded-lg bg-primary-container text-on-primary font-body-sm text-body-sm font-medium whitespace-nowrap shadow-sm" data-stage="ALL" onclick="filterQueueJobs('ALL')">All Jobs (<span id="tab-count-all">0</span>)</button>
+              <button class="queue-tab-btn px-space-md py-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-body-sm text-body-sm whitespace-nowrap transition-colors" data-stage="PROCESSING" onclick="filterQueueJobs('PROCESSING')">Processing (<span id="tab-count-proc">0</span>)</button>
+              <button class="queue-tab-btn px-space-md py-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-body-sm text-body-sm whitespace-nowrap transition-colors flex items-center gap-1.5" data-stage="REVIEW" onclick="filterQueueJobs('REVIEW')">
+                <span>Awaiting Review (<span id="tab-count-rev">0</span>)</span>
+                <span class="w-2 h-2 rounded-full bg-error"></span>
+              </button>
+              <button class="queue-tab-btn px-space-md py-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-body-sm text-body-sm whitespace-nowrap transition-colors" data-stage="COMPLETED" onclick="filterQueueJobs('COMPLETED')">Completed (<span id="tab-count-comp">0</span>)</button>
+              <button class="queue-tab-btn px-space-md py-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-body-sm text-body-sm whitespace-nowrap transition-colors" data-stage="FAILED" onclick="filterQueueJobs('FAILED')">Failed / Corrupted (<span id="tab-count-fail">0</span>)</button>
+            </div>
+            <div class="flex items-center gap-space-sm">
+              <div class="relative w-64">
+                <span class="material-symbols-outlined absolute left-2 top-2 text-outline text-sm pointer-events-none">search</span>
+                <input class="w-full h-8 pl-7 pr-3 bg-surface-container-low text-on-surface placeholder:text-outline font-body-sm text-body-sm rounded-lg outline-none focus:bg-surface-container transition-all" id="queue-filter-input" placeholder="Filter filename or ID..." type="text" oninput="renderJobsTable()"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-body-sm text-body-sm">
+              <thead>
+                <tr class="bg-surface-container-low text-on-surface-variant font-micro-badge text-micro-badge uppercase tracking-wider">
+                  <th class="py-2.5 px-space-md">Batch / File Name</th>
+                  <th class="py-2.5 px-space-sm">Job ID</th>
+                  <th class="py-2.5 px-space-sm">Document Type</th>
+                  <th class="py-2.5 px-space-sm text-right">Scope</th>
+                  <th class="py-2.5 px-space-md w-64">Processing Pipeline Stage</th>
+                  <th class="py-2.5 px-space-sm">Status</th>
+                  <th class="py-2.5 px-space-md text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container-low" id="jobs-table-body">
+                <!-- Dynamically Populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="p-space-md bg-surface-container-low flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant">
+            <span class="font-label-numeric-sm text-label-numeric-sm" id="queue-pagination-info">Showing jobs</span>
+            <div class="flex items-center gap-space-xs font-label-numeric-sm text-label-numeric-sm">
+              <button class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container shadow-sm disabled:opacity-50" onclick="alert('Previous page')">Previous</button>
+              <span class="px-2 py-1 font-bold text-on-surface">Page 1</span>
+              <button class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container shadow-sm" onclick="alert('Next page')">Next</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Diagnostic Drawer / Modal Overlay -->
+        <div class="hidden fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm flex items-center justify-center p-space-md" id="errorDiagnosticDrawer">
+          <div class="bg-surface-container-lowest w-full max-w-xl rounded-xl shadow-2xl p-space-lg flex flex-col gap-space-md border border-error/20">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-space-sm text-error">
+                <span class="material-symbols-outlined text-2xl">bug_report</span>
+                <span class="font-headline-sm text-headline-sm font-bold">Pipeline Diagnostic: Halted Job</span>
+              </div>
+              <button class="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container-low" onclick="document.getElementById('errorDiagnosticDrawer').classList.add('hidden')">
+                <span class="material-symbols-outlined text-xl">close</span>
+              </button>
+            </div>
+            <div class="bg-surface-container-low p-space-md rounded-lg font-label-numeric-sm text-label-numeric-sm text-on-surface flex flex-col gap-1.5" id="diag-content">
+              <div><span class="text-on-surface-variant">Job ID:</span> <span id="diag-job-id">-</span></div>
+              <div><span class="text-on-surface-variant">File:</span> <span id="diag-file-name">-</span></div>
+              <div><span class="text-on-surface-variant">Exception:</span> <span class="text-error font-bold" id="diag-error-msg">-</span></div>
+            </div>
+            <div class="flex items-center justify-end gap-space-sm">
+              <button class="px-space-md py-1.5 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm hover:bg-surface-container" onclick="document.getElementById('errorDiagnosticDrawer').classList.add('hidden')">Dismiss</button>
+              <button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary font-body-sm text-body-sm hover:bg-primary" id="btn-reprocess-diag" onclick="triggerReprocessJob()">Reprocess with Force OCR</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- VIEW 2: HUMAN-IN-THE-LOOP (HITL) WORKBENCH                          -->
+      <!-- =================================================================== -->
+      <div class="view-panel hidden flex flex-col w-full pb-space-xl" id="view-hitl-workbench">
+        <!-- Top Breadcrumbs & Record Header Bar -->
+        <div class="w-full bg-surface-container-lowest shadow-sm px-space-md py-space-xs flex flex-wrap items-center justify-between gap-space-md rounded-xl mb-space-md">
+          <div class="flex items-center gap-space-md min-w-0">
+            <div class="flex items-center gap-space-xs text-on-surface-variant font-label-numeric-sm text-label-numeric-sm shrink-0">
+              <span class="hover:text-primary cursor-pointer transition-colors" onclick="navigateTo('ingestion-pipeline')">Queue</span>
+              <span class="text-outline-variant">/</span>
+              <span class="text-primary-container font-semibold" id="workbench-batch-ref">#BCH-8821</span>
+              <span class="text-outline-variant">/</span>
+              <span class="bg-error-container text-on-error-container px-1.5 py-0.5 rounded font-micro-badge text-micro-badge uppercase font-bold tracking-wider" id="workbench-flag-pill">Flagged Document</span>
+            </div>
+            <div class="h-4 w-px bg-surface-variant hidden sm:block"></div>
+            <div class="flex items-center gap-space-xs min-w-0">
+              <span class="font-headline-sm text-headline-sm text-on-surface truncate" id="workbench-vendor-title">Apex Global Logistics Corp</span>
+              <span class="font-label-numeric-md text-label-numeric-md text-on-surface-variant shrink-0 bg-surface-container-low px-1.5 py-0.5 rounded" id="workbench-inv-num">#INV-2026-9812</span>
+            </div>
+            <div class="hidden lg:flex items-center gap-1.5 bg-amber-50 text-amber-900 px-2 py-0.5 rounded-full shadow-sm" id="workbench-status-pill">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+              <span class="font-micro-badge text-micro-badge font-bold uppercase tracking-wider">Needs Human Verification</span>
+              <span class="font-label-numeric-sm text-label-numeric-sm text-amber-700 font-semibold" id="workbench-conf-pill">(78.4% conf)</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-space-xs shrink-0">
+            <div class="flex items-center bg-surface-container-low rounded p-0.5 shadow-sm">
+              <button class="flex items-center gap-1 px-space-sm py-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest font-body-sm text-body-sm transition-all" onclick="loadAdjacentRecord(-1)">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                <span class="hidden md:inline">Prev</span>
+              </button>
+              <button class="flex items-center gap-1 px-space-sm py-1 rounded text-on-surface hover:text-primary bg-surface-container-lowest font-body-sm text-body-sm transition-all shadow-sm" onclick="loadAdjacentRecord(1)">
+                <span class="hidden md:inline">Next</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Split-Screen Workspace -->
+        <div class="w-full grid grid-cols-1 lg:grid-cols-10 gap-space-md min-h-[640px]">
+          <!-- LEFT PANE: Canvas -->
+          <div class="lg:col-span-5 flex flex-col bg-surface-container-low rounded-xl overflow-hidden shadow-sm relative min-h-[640px]">
+            <div class="z-20 bg-inverse-surface/90 text-inverse-on-surface backdrop-blur-md px-space-sm py-space-xs flex flex-wrap items-center justify-between gap-space-xs shadow-md">
+              <div class="flex items-center gap-space-xs">
+                <div class="flex items-center bg-surface-container-highest/20 rounded px-1 py-0.5 font-label-numeric-sm text-label-numeric-sm">
+                  <span>Page 1 of 1</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-space-xs">
+                <div class="flex items-center bg-surface-container-highest/20 rounded p-0.5">
+                  <button class="p-1 hover:text-tertiary-fixed transition-colors" id="btn-zoom-out" title="Zoom Out">
+                    <span class="material-symbols-outlined text-sm">remove</span>
+                  </button>
+                  <span class="font-label-numeric-sm text-label-numeric-sm px-1.5 font-semibold text-tertiary-fixed" id="zoom-val">100%</span>
+                  <button class="p-1 hover:text-tertiary-fixed transition-colors" id="btn-zoom-in" title="Zoom In">
+                    <span class="material-symbols-outlined text-sm">add</span>
+                  </button>
+                  <button class="p-1 hover:text-tertiary-fixed transition-colors" id="btn-zoom-fit" title="Fit to width">
+                    <span class="material-symbols-outlined text-sm">fit_screen</span>
+                  </button>
+                </div>
+                <button class="flex items-center gap-1 bg-tertiary-container text-on-tertiary px-2 py-1 rounded text-micro-badge font-micro-badge tracking-wider transition-all" id="btn-heatmap">
+                  <span class="material-symbols-outlined text-xs">analytics</span>
+                  <span class="hidden sm:inline">Heatmap ON</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Invoice Canvas Display -->
+            <div class="flex-1 overflow-auto p-space-md flex items-center justify-center bg-slate-900/10 relative" id="viewport-canvas">
+              <div class="w-full max-w-[560px] bg-surface-container-lowest text-on-surface shadow-2xl p-space-xl relative transition-transform duration-150 origin-top rounded-lg" id="invoice-sheet">
+                <div class="flex items-start justify-between pb-space-lg border-b border-surface-container">
+                  <div>
+                    <div class="relative group/box inline-block">
+                      <div class="absolute -inset-1 bg-emerald-500/15 ring-2 ring-emerald-500 rounded pointer-events-none"></div>
+                      <span class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-surface block" id="canvas-vendor">Apex Global Logistics Ltd</span>
+                      <div class="absolute -top-3 -right-2 bg-emerald-600 text-white font-micro-badge text-micro-badge px-1 rounded shadow-sm opacity-90">99%</div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Global Freight Division • Pier 42 Marine Terminal</p>
+                    <p class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">Tax ID: US-EIN-992-1049-X</p>
+                  </div>
+                  <div class="text-right flex flex-col items-end gap-1">
+                    <span class="font-headline-lg text-headline-lg font-bold text-on-surface uppercase tracking-wider">Commercial Invoice</span>
+                    <div class="relative inline-block mt-1">
+                      <div class="absolute -inset-1 bg-emerald-500/15 ring-2 ring-emerald-500 rounded pointer-events-none"></div>
+                      <div class="font-label-numeric-md text-label-numeric-md font-bold text-primary-container px-1" id="canvas-inv-num">INV-2026-9812</div>
+                      <div class="absolute -top-3 -right-1 bg-emerald-600 text-white font-micro-badge text-micro-badge px-1 rounded shadow-sm">99%</div>
+                    </div>
+                    <div class="relative inline-block mt-2">
+                      <div class="absolute -inset-0.5 bg-emerald-500/15 ring-1 ring-emerald-500 rounded pointer-events-none"></div>
+                      <div class="font-label-numeric-sm text-label-numeric-sm text-on-surface px-1" id="canvas-inv-date">Date: 2026-03-14</div>
+                      <div class="absolute -top-3 -left-1 bg-emerald-600 text-white font-micro-badge text-micro-badge px-1 rounded shadow-sm">98%</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Extracted Line Items -->
+                <div class="mt-space-md">
+                  <div class="bg-surface-container-low px-space-sm py-1.5 flex justify-between font-label-numeric-sm text-label-numeric-sm font-bold text-on-surface-variant uppercase">
+                    <span class="w-16">Item</span>
+                    <span class="flex-1">Description</span>
+                    <span class="w-12 text-center">Qty</span>
+                    <span class="w-20 text-right">Unit Rate</span>
+                    <span class="w-24 text-right">Amount</span>
+                  </div>
+                  <div class="relative py-2 px-space-sm flex justify-between items-center text-body-sm font-body-sm bg-surface-container-lowest">
+                    <span class="w-16 font-label-numeric-sm text-outline">FRT-9901</span>
+                    <span class="flex-1 font-medium text-on-surface">Cross-Border Freight Logistics</span>
+                    <span class="w-12 text-center font-label-numeric-sm">2</span>
+                    <span class="w-20 text-right font-label-numeric-sm">$1,500.00</span>
+                    <span class="w-24 text-right font-label-numeric-sm font-bold text-on-surface">$3,000.00</span>
+                  </div>
+                  <div class="relative py-2 px-space-sm flex justify-between items-center text-body-sm font-body-sm bg-surface-container-low/20">
+                    <span class="w-16 font-label-numeric-sm text-outline">HND-4410</span>
+                    <span class="flex-1 font-medium text-on-surface">Terminal Handling &amp; Port Fee</span>
+                    <span class="w-12 text-center font-label-numeric-sm">1</span>
+                    <span class="w-20 text-right font-label-numeric-sm">$1,200.00</span>
+                    <span class="w-24 text-right font-label-numeric-sm font-bold text-on-surface">$1,200.00</span>
+                  </div>
+                </div>
+
+                <!-- Document Totals -->
+                <div class="mt-space-lg flex justify-end">
+                  <div class="w-64 flex flex-col gap-1.5 p-space-sm bg-surface-container-low/40 rounded">
+                    <div class="flex justify-between items-center text-body-sm font-body-sm">
+                      <span class="text-on-surface-variant">Subtotal:</span>
+                      <span class="font-label-numeric-sm font-semibold" id="canvas-subtotal">$4,200.00</span>
+                    </div>
+                    <div class="flex justify-between items-center relative py-1 px-1 rounded bg-amber-500/10">
+                      <span class="text-amber-900 font-body-sm">Tax (10%):</span>
+                      <span class="font-label-numeric-sm font-bold text-amber-900" id="canvas-tax">$420.00</span>
+                    </div>
+                    <div class="flex justify-between items-center relative py-1 px-1 rounded bg-rose-500/15 ring-2 ring-rose-600 mt-1" id="ocr-box-total">
+                      <span class="font-body-md-medium text-rose-900 font-bold">Printed Total:</span>
+                      <span class="font-label-numeric-md font-bold text-rose-700 underline" id="canvas-total">$4,520.00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT PANE: Inspector Form -->
+          <div class="lg:col-span-5 flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-space-md border border-surface-container justify-between">
+            <div class="flex flex-col gap-space-md">
+              <!-- Math Discrepancy Banner -->
+              <div class="bg-rose-50 rounded-lg p-space-sm flex items-start gap-space-sm border border-rose-200" id="discrepancy-banner">
+                <span class="material-symbols-outlined text-rose-600 text-lg shrink-0 mt-0.5">report_problem</span>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-1 flex-wrap">
+                    <span class="font-body-md-medium text-body-md-medium text-rose-900 font-bold">Math Discrepancy Flagged</span>
+                    <span class="font-label-numeric-sm text-label-numeric-sm bg-rose-200/80 text-rose-900 font-bold px-1.5 py-0.5 rounded" id="diff-badge">Diff: -$100.00</span>
+                  </div>
+                  <p class="font-label-numeric-sm text-label-numeric-sm text-rose-800 mt-1 leading-snug" id="diff-explanation">
+                    Sum of Line Items ($4,200.00) + Tax ($420.00) = $4,620.00 ≠ Extracted Total ($4,520.00).
+                  </p>
+                </div>
+                <button class="shrink-0 bg-rose-600 hover:bg-rose-700 text-white font-micro-badge text-micro-badge font-bold px-2 py-1 rounded tracking-wider uppercase transition-colors shadow-sm" id="btn-fix-calc" onclick="applyAutoFix()">
+                  Auto-Fix Total
+                </button>
+              </div>
+
+              <!-- Header Fields -->
+              <div class="flex flex-col gap-space-sm">
+                <div class="flex items-center justify-between">
+                  <span class="font-micro-badge text-micro-badge uppercase text-on-surface-variant font-bold tracking-wider">Header Field Ledger</span>
+                  <span class="font-label-numeric-sm text-label-numeric-sm text-outline">Confidence avg: 92.1%</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm bg-surface-container-low p-space-sm rounded-lg">
+                  <div class="flex flex-col gap-1">
+                    <label class="font-body-sm text-body-sm text-on-surface-variant">Invoice Number</label>
+                    <input class="w-full h-8 px-2 bg-surface-container-lowest text-on-surface font-label-numeric-md rounded outline-none shadow-sm focus:ring-1 focus:ring-primary" id="input-inv-num" type="text" value="INV-2026-9812"/>
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <label class="font-body-sm text-body-sm text-on-surface-variant">Invoice Date</label>
+                    <input class="w-full h-8 px-2 bg-surface-container-lowest text-on-surface font-label-numeric-md rounded outline-none shadow-sm focus:ring-1 focus:ring-primary" id="input-inv-date" type="text" value="2026-03-14"/>
+                  </div>
+                  <div class="flex flex-col gap-1 sm:col-span-2">
+                    <label class="font-body-sm text-body-sm text-on-surface-variant">Supplier Name</label>
+                    <input class="w-full h-8 px-2 bg-surface-container-lowest text-on-surface font-body-md font-medium rounded outline-none shadow-sm focus:ring-1 focus:ring-primary" id="input-supplier" type="text" value="Apex Global Logistics Corp"/>
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <label class="font-body-sm text-body-sm text-on-surface-variant">Subtotal ($)</label>
+                    <input class="w-full h-8 px-2 text-right bg-surface-container-lowest text-on-surface font-label-numeric-md font-semibold rounded outline-none shadow-sm focus:ring-1 focus:ring-primary" id="input-subtotal" type="number" step="0.01" value="4200.00" oninput="recalcDiscrepancy()"/>
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <label class="font-body-sm text-body-sm text-on-surface-variant">Tax Amount ($)</label>
+                    <input class="w-full h-8 px-2 text-right bg-surface-container-lowest text-on-surface font-label-numeric-md font-semibold rounded outline-none shadow-sm focus:ring-1 focus:ring-primary" id="input-tax" type="number" step="0.01" value="420.00" oninput="recalcDiscrepancy()"/>
+                  </div>
+                  <div class="flex flex-col gap-1 sm:col-span-2">
+                    <label class="font-body-sm text-body-sm text-on-surface-variant flex items-center justify-between">
+                      <span class="font-bold text-rose-700">Total Payable Amount ($)</span>
+                      <span class="text-xs text-rose-600 font-semibold" id="total-status-hint">Math Conflict</span>
+                    </label>
+                    <input class="w-full h-9 px-3 text-right bg-rose-50 text-rose-950 font-label-numeric-lg font-bold rounded outline-none ring-2 ring-rose-500 shadow-sm transition-all" id="input-total" type="number" step="0.01" value="4520.00" oninput="recalcDiscrepancy()"/>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Audit Note Memo -->
+              <div class="flex flex-col gap-1">
+                <label class="font-body-sm text-body-sm text-on-surface-variant flex items-center justify-between">
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">edit_note</span> Audit Trail Verification Memo:
+                  </span>
+                  <span class="font-micro-badge text-micro-badge text-outline">Auto-stamped Elena Vance</span>
+                </label>
+                <input class="w-full h-8 px-space-sm bg-surface-container-low text-on-surface font-body-sm text-body-sm rounded outline-none focus:ring-1 focus:ring-primary shadow-inner" id="audit-note" type="text" value="Adjusted total to match line item subtotal + tax"/>
+              </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="pt-space-md border-t border-surface-container flex flex-wrap items-center justify-between gap-space-sm mt-space-md">
+              <button class="px-3 py-1.5 rounded bg-rose-50 text-rose-700 hover:bg-rose-100 font-body-md-medium text-body-md-medium transition-all shadow-sm" onclick="alert('Record flagged for review queue.')">
+                <span class="material-symbols-outlined text-sm align-middle">flag</span>
+                <span>Flag Exception (⌘E)</span>
+              </button>
+              <div class="flex items-center gap-space-xs">
+                <button class="px-3 py-1.5 rounded bg-surface-container-low text-on-surface hover:bg-surface-container font-body-md-medium text-body-md-medium transition-all shadow-sm" onclick="saveRecordCorrection(false)">
+                  <span class="material-symbols-outlined text-sm align-middle">save</span>
+                  <span>Save Draft (⌘S)</span>
+                </button>
+                <button class="flex items-center gap-2 px-4 py-1.5 rounded bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm tracking-tight transition-all shadow-md active:scale-95" id="btn-approve" onclick="saveRecordCorrection(true)">
+                  <span class="material-symbols-outlined text-lg">check_circle</span>
+                  <span>Approve &amp; Verify (⌘↵)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- VIEW 3: CROSS-VERIFICATION & MULTI-LEDGER MATRIX                    -->
+      <!-- =================================================================== -->
+      <div class="view-panel hidden flex flex-col w-full pb-space-xl" id="view-cross-verification">
+        <div class="flex flex-col gap-space-md py-space-md">
+          <div class="flex flex-wrap items-center justify-between gap-space-md">
+            <div class="flex flex-col gap-0.5">
+              <div class="flex items-center gap-space-sm">
+                <span class="font-micro-badge text-micro-badge uppercase tracking-wider text-primary px-space-xs py-0.5 rounded-lg bg-primary-fixed">Engine v4.2 · Dual-Stream Matching</span>
+                <span class="font-label-numeric-sm text-label-numeric-sm text-secondary flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>Ledger Synced
+                </span>
+              </div>
+              <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Cross-Verification &amp; Multi-Ledger Reconciliation Matrix</h1>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Reconciling extracted PDF invoices against accounting master spreadsheets and purchase orders.</p>
+            </div>
+            <div class="flex items-center gap-space-sm">
+              <button class="flex items-center gap-space-xs px-space-md py-1.5 bg-surface-container-lowest text-on-surface rounded-lg shadow-sm hover:bg-surface-container-low transition-colors" onclick="runLiveCrossVerification()">
+                <span class="material-symbols-outlined text-sm text-secondary">sync</span>
+                <span class="font-body-sm text-body-sm font-medium">Re-run Ledger Sync</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Pills -->
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md items-center">
+            <div class="xl:col-span-8 flex flex-wrap items-center gap-space-xs p-1 bg-surface-container-low rounded-xl shadow-sm">
+              <button class="filter-tab active flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-surface-container-lowest text-on-surface shadow-sm transition-all" data-filter="all" onclick="filterCrossVerification('all')">
+                <span class="font-body-sm text-body-sm font-medium">All Pairs</span>
+                <span class="font-label-numeric-sm text-label-numeric-sm px-1.5 py-0.2 rounded-full bg-surface-container text-on-surface-variant font-bold" id="cv-count-all">310</span>
+              </button>
+              <button class="filter-tab flex items-center gap-space-xs px-space-md py-1.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-lowest/60 transition-all" data-filter="exact" onclick="filterCrossVerification('exact')">
+                <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                <span class="font-body-sm text-body-sm font-medium">Exact Matches</span>
+                <span class="font-label-numeric-sm text-label-numeric-sm px-1.5 py-0.2 rounded-full bg-tertiary-container/20 text-tertiary font-bold" id="cv-count-exact">288</span>
+              </button>
+              <button class="filter-tab flex items-center gap-space-xs px-space-md py-1.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-lowest/60 transition-all" data-filter="discrepancy" onclick="filterCrossVerification('discrepancy')">
+                <span class="w-2 h-2 rounded-full bg-error"></span>
+                <span class="font-body-sm text-body-sm font-medium">Discrepancies</span>
+                <span class="font-label-numeric-sm text-label-numeric-sm px-1.5 py-0.2 rounded-full bg-error-container text-on-error-container font-bold" id="cv-count-disc">18</span>
+              </button>
+              <button class="filter-tab flex items-center gap-space-xs px-space-md py-1.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-lowest/60 transition-all" data-filter="orphan" onclick="filterCrossVerification('orphan')">
+                <span class="w-2 h-2 rounded-full bg-on-secondary-fixed"></span>
+                <span class="font-body-sm text-body-sm font-medium">Unmatched Orphans</span>
+                <span class="font-label-numeric-sm text-label-numeric-sm px-1.5 py-0.2 rounded-full bg-secondary-fixed text-on-secondary-fixed font-bold" id="cv-count-orph">4</span>
+              </button>
+            </div>
+            <div class="xl:col-span-4 flex items-center justify-between px-space-md py-2 bg-surface-container-lowest rounded-xl shadow-sm">
+              <div class="flex flex-col">
+                <span class="font-micro-badge text-micro-badge uppercase text-secondary">Batch Parity Rate</span>
+                <span class="font-label-numeric-lg text-label-numeric-lg text-tertiary font-bold">92.9%</span>
+              </div>
+              <div class="h-6 w-px bg-surface-container"></div>
+              <div class="flex flex-col">
+                <span class="font-micro-badge text-micro-badge uppercase text-secondary">Ledger Variance Sum</span>
+                <span class="font-label-numeric-lg text-label-numeric-lg text-error font-bold">+$495.20</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-Column Comparative Reconciliation Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start mt-space-sm">
+          <div class="lg:col-span-8 flex flex-col gap-space-xs">
+            <div class="grid grid-cols-12 gap-space-sm px-space-md py-space-sm bg-surface-container-high rounded-t-xl text-on-surface shadow-sm">
+              <div class="col-span-4 flex items-center gap-space-xs">
+                <span class="material-symbols-outlined text-sm text-primary">picture_as_pdf</span>
+                <span class="font-micro-badge text-micro-badge uppercase tracking-wider font-bold">Source: Extracted Invoices</span>
+              </div>
+              <div class="col-span-4 flex items-center justify-center gap-space-xs">
+                <span class="material-symbols-outlined text-sm text-secondary">compare_arrows</span>
+                <span class="font-micro-badge text-micro-badge uppercase tracking-wider font-bold">Variance &amp; Rule Delta</span>
+              </div>
+              <div class="col-span-4 flex items-center justify-end gap-space-xs text-right">
+                <span class="font-micro-badge text-micro-badge uppercase tracking-wider font-bold">Target: Ledger Master</span>
+                <span class="material-symbols-outlined text-sm text-tertiary">table_chart</span>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-space-xs" id="cross-verify-rows-container">
+              <!-- Dynamically populated or interactive specimen rows -->
+              <div class="reconcile-row cursor-pointer transition-all duration-150 rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md p-space-sm border-l-4 border-l-error" data-type="discrepancy">
+                <div class="grid grid-cols-12 gap-space-sm items-center">
+                  <div class="col-span-4 flex flex-col gap-1 min-w-0 pr-space-xs">
+                    <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">INV-9921</span>
+                    <span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Apex Industrial Ltd</span>
+                    <span class="font-label-numeric-md text-label-numeric-md font-bold text-error">$12,450.00</span>
+                  </div>
+                  <div class="col-span-4 flex flex-col items-center justify-center gap-1.5 px-space-xs text-center">
+                    <div class="flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-error-container text-on-error-container">
+                      <span class="material-symbols-outlined text-xs">warning</span>
+                      <span class="font-micro-badge text-micro-badge uppercase font-bold tracking-wider">Variance: +$50.00</span>
+                    </div>
+                    <span class="font-label-numeric-sm text-label-numeric-sm text-secondary">Inv: $12,450 vs Led: $12,400</span>
+                  </div>
+                  <div class="col-span-4 flex flex-col gap-1 min-w-0 pl-space-xs text-right">
+                    <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">Row 142</span>
+                    <span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Apex Industrial Ltd</span>
+                    <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">$12,400.00</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="reconcile-row cursor-pointer transition-all duration-150 rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md p-space-sm border-l-4 border-l-tertiary" data-type="exact">
+                <div class="grid grid-cols-12 gap-space-sm items-center">
+                  <div class="col-span-4 flex flex-col gap-1 min-w-0 pr-space-xs">
+                    <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">INV-9922</span>
+                    <span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Meridian Tech Supply</span>
+                    <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">$38,910.00</span>
+                  </div>
+                  <div class="col-span-4 flex flex-col items-center justify-center gap-1.5 px-space-xs text-center">
+                    <div class="flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-tertiary-container/15 text-tertiary">
+                      <span class="material-symbols-outlined text-xs">check_circle</span>
+                      <span class="font-micro-badge text-micro-badge uppercase font-bold tracking-wider">Exact Match</span>
+                    </div>
+                    <span class="font-label-numeric-sm text-label-numeric-sm text-secondary">100% Parity on 6 Keys</span>
+                  </div>
+                  <div class="col-span-4 flex flex-col gap-1 min-w-0 pl-space-xs text-right">
+                    <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">Row 143</span>
+                    <span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Meridian Tech Supply</span>
+                    <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">$38,910.00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inspector Side Drawer -->
+          <div class="lg:col-span-4 flex flex-col gap-space-md bg-surface-container-lowest rounded-xl p-space-md shadow-md sticky top-16 border border-surface-container">
+            <div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+              <div class="flex items-center gap-space-sm">
+                <div class="w-8 h-8 rounded-lg bg-error-container text-on-error-container flex items-center justify-center">
+                  <span class="material-symbols-outlined text-lg">difference</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-headline-sm text-headline-sm text-on-surface">Diff Inspector</span>
+                  <span class="font-label-numeric-sm text-label-numeric-sm text-secondary">Focus: INV-9921 ⟷ Row 142</span>
+                </div>
+              </div>
+              <span class="font-micro-badge text-micro-badge bg-error-container text-on-error-container px-space-xs py-0.5 rounded uppercase font-bold">Variance</span>
+            </div>
+            <div class="flex flex-col gap-1 p-space-sm bg-surface-container-low rounded-lg">
+              <span class="font-micro-badge text-micro-badge uppercase text-secondary font-bold">Tolerance Evaluation</span>
+              <p class="font-body-sm text-body-sm text-on-surface">
+                Max Tolerance: <span class="font-semibold">$5.00</span>.
+                <span class="text-error font-semibold">Exceeded by $45.00</span>.
+              </p>
+            </div>
+            <button class="w-full py-2 bg-primary-container text-on-primary rounded-lg font-body-sm text-body-sm font-semibold hover:bg-primary shadow-sm" onclick="alert('Discrepancy resolved and pushed to accounting ledger!')">
+              Auto-Reconcile Variance
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- VIEW 4: SEARCH EXPLORER (HYBRID KEYWORD + VECTOR)                   -->
+      <!-- =================================================================== -->
+      <div class="view-panel hidden flex flex-col w-full pb-12" id="view-search-explorer">
+        <!-- Top Search Panel -->
+        <div class="relative w-full bg-surface-container-lowest rounded-xl p-space-xl shadow-sm mb-space-lg border border-surface-container">
+          <div class="flex flex-col gap-space-md">
+            <div class="flex items-center justify-between flex-wrap gap-space-sm">
+              <div class="flex items-center gap-space-sm">
+                <div class="flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-primary-container text-on-primary">
+                  <span class="material-symbols-outlined text-sm">hub</span>
+                  <span class="font-micro-badge text-micro-badge tracking-wider uppercase">Hybrid: Semantic Embeddings + BM25 Lexical Keyword</span>
+                </div>
+                <span class="font-label-numeric-sm text-label-numeric-sm text-secondary">Embedding Model: text-embedding-3-small (1536d)</span>
+              </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative flex items-center shadow-sm rounded-lg bg-surface-container-low focus-within:bg-surface-container-lowest focus-within:shadow-md transition-all">
+              <div class="pl-space-md flex items-center text-primary-container pointer-events-none">
+                <span class="material-symbols-outlined text-2xl">troubleshoot</span>
+              </div>
+              <input class="w-full h-12 pl-space-sm pr-40 bg-transparent text-on-surface font-body-md-medium text-body-md-medium outline-none placeholder:text-outline" id="search-input" placeholder="Enter natural language query or vector concepts..." type="text" value="IT hardware cloud invoices with tax discrepancies" onkeydown="if(event.key==='Enter') executeHybridSearch()"/>
+              <div class="absolute right-space-sm flex items-center gap-space-xs">
+                <button class="flex items-center gap-1 px-space-md py-1.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container font-body-md-medium text-body-md transition-all shadow-sm" onclick="executeHybridSearch()">
+                  <span>Search</span>
+                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div class="flex items-center gap-space-xs flex-wrap pt-space-xs">
+              <span class="font-micro-badge text-micro-badge text-secondary uppercase tracking-wider flex items-center gap-1 mr-space-xs">
+                <span class="material-symbols-outlined text-xs">auto_awesome</span> Suggested:
+              </span>
+              <button class="px-space-sm py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-numeric-sm text-label-numeric-sm cursor-pointer" onclick="setQuery('Cloud Database Hosting Acme total 1100'); executeHybridSearch();">
+                “Cloud Database Hosting Acme”
+              </button>
+              <button class="px-space-sm py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-numeric-sm text-label-numeric-sm cursor-pointer" onclick="setQuery('Zenith Electronics'); executeHybridSearch();">
+                “Zenith Electronics”
+              </button>
+              <button class="px-space-sm py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-numeric-sm text-label-numeric-sm cursor-pointer" onclick="setQuery('Math discrepancy tax mismatch'); executeHybridSearch();">
+                “Math discrepancy tax mismatch”
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Facets + Results Grid -->
+        <div class="grid grid-cols-12 gap-space-lg">
+          <!-- Left Facets (3 cols) -->
+          <aside class="col-span-12 lg:col-span-3 flex flex-col gap-space-md">
+            <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md border border-surface-container">
+              <div class="flex items-center justify-between pb-space-xs border-b border-surface-container">
+                <div class="flex items-center gap-space-xs">
+                  <span class="material-symbols-outlined text-base text-primary-container">tune</span>
+                  <span class="font-headline-sm text-headline-sm text-on-surface">Structured Facets</span>
+                </div>
+                <button class="font-label-numeric-sm text-label-numeric-sm text-primary hover:underline" onclick="resetFacets()">Reset</button>
+              </div>
+
+              <!-- Vendor filter -->
+              <div class="flex flex-col gap-space-xs">
+                <label class="font-micro-badge text-micro-badge uppercase text-secondary tracking-wider">Supplier</label>
+                <input class="w-full h-8 px-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-outline outline-none" id="facet-supplier" placeholder="Filter supplier..." type="text" oninput="executeHybridSearch()"/>
+              </div>
+
+              <!-- Min / Max Total -->
+              <div class="flex flex-col gap-space-xs">
+                <label class="font-micro-badge text-micro-badge uppercase text-secondary tracking-wider">Amount Range ($)</label>
+                <div class="grid grid-cols-2 gap-space-xs">
+                  <input class="w-full h-8 px-2 bg-surface-container-low rounded-lg font-label-numeric-sm text-on-surface outline-none" id="facet-min-total" placeholder="Min $" type="number" oninput="executeHybridSearch()"/>
+                  <input class="w-full h-8 px-2 bg-surface-container-low rounded-lg font-label-numeric-sm text-on-surface outline-none" id="facet-max-total" placeholder="Max $" type="number" oninput="executeHybridSearch()"/>
+                </div>
+              </div>
+
+              <!-- Review status -->
+              <div class="flex flex-col gap-space-xs">
+                <label class="font-micro-badge text-micro-badge uppercase text-secondary tracking-wider">Validation Status</label>
+                <select class="w-full h-8 px-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface outline-none cursor-pointer" id="facet-status" onchange="executeHybridSearch()">
+                  <option value="">All Statuses</option>
+                  <option value="AUTO_VERIFIED">AUTO_VERIFIED</option>
+                  <option value="NEEDS_MANUAL_REVIEW">NEEDS_MANUAL_REVIEW</option>
+                  <option value="MANUALLY_VERIFIED">MANUALLY_VERIFIED</option>
+                </select>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Right Results (9 cols) -->
+          <main class="col-span-12 lg:col-span-9 flex flex-col gap-space-md">
+            <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between flex-wrap gap-space-sm border border-surface-container">
+              <div class="flex flex-col">
+                <div class="flex items-center gap-2">
+                  <span class="font-headline-sm text-headline-sm text-on-surface"><span id="search-total-count">0</span> Documents Found</span>
+                  <span class="font-label-numeric-sm text-label-numeric-sm bg-tertiary-fixed text-on-tertiary-fixed font-bold px-1.5 py-0.5 rounded">Hybrid RRF Reranked</span>
+                </div>
+                <span class="font-label-numeric-sm text-label-numeric-sm text-secondary">PostgreSQL pgvector <=> and full-text keyword indexing</span>
+              </div>
+            </div>
+
+            <!-- Dynamic Search Hits List -->
+            <div class="flex flex-col gap-space-md" id="search-results-list">
+              <!-- Rendered via JavaScript -->
+            </div>
+          </main>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- VIEW 5: SYSTEM TELEMETRY                                            -->
+      <!-- =================================================================== -->
+      <div class="view-panel hidden flex flex-col w-full pb-space-xl" id="view-system-telemetry">
+        <div class="flex flex-col gap-space-md py-space-md">
+          <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">System Telemetry &amp; Health Dashboard</h1>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+            <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm border border-surface-container flex flex-col gap-2">
+              <span class="font-micro-badge text-micro-badge uppercase text-secondary font-bold">FastAPI REST Server</span>
+              <div class="flex items-center gap-2 text-tertiary font-bold text-lg">
+                <span class="w-3 h-3 rounded-full bg-tertiary animate-pulse"></span> Healthy (1.0.0)
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Endpoints active on /api/v1</p>
+            </div>
+            <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm border border-surface-container flex flex-col gap-2">
+              <span class="font-micro-badge text-micro-badge uppercase text-secondary font-bold">Relational Database &amp; Vector</span>
+              <div class="flex items-center gap-2 text-tertiary font-bold text-lg">
+                <span class="w-3 h-3 rounded-full bg-tertiary animate-pulse"></span> Connected (SQLAlchemy)
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Models: documents, records, embeddings, jobs</p>
+            </div>
+            <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm border border-surface-container flex flex-col gap-2">
+              <span class="font-micro-badge text-micro-badge uppercase text-secondary font-bold">Background Worker Queue</span>
+              <div class="flex items-center gap-2 text-primary font-bold text-lg">
+                <span class="w-3 h-3 rounded-full bg-primary animate-pulse"></span> AsyncWorkerQueue Active
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">4 Concurrent Workers</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- APPLICATION LOGIC SCRIPT -->
+  <script>
+    // Navigation Routing State
+    const navItems = document.querySelectorAll('.nav-item');
+    const viewPanels = document.querySelectorAll('.view-panel');
+
+    function navigateTo(path) {
+      viewPanels.forEach(p => {
+        if (p.id === 'view-' + path) {
+          p.classList.remove('hidden');
+        } else {
+          p.classList.add('hidden');
+        }
+      });
+
+      navItems.forEach(n => {
+        if (n.getAttribute('data-path') === path) {
+          n.className = "nav-item flex items-center gap-space-sm px-space-md py-space-xs rounded-lg transition-colors bg-primary-container text-on-primary font-body-md-medium";
+        } else {
+          n.className = "nav-item flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-outline-variant hover:bg-inverse-surface hover:text-inverse-on-surface transition-colors";
+        }
+      });
+
+      window.location.hash = path;
+
+      if (path === 'ingestion-pipeline') {
+        fetchLiveJobs();
+      } else if (path === 'search-explorer') {
+        executeHybridSearch();
+      }
+    }
+
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const p = item.getAttribute('data-path');
+        navigateTo(p);
+      });
+    });
+
+    // Check URL Hash on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash.replace('#', '') || 'ingestion-pipeline';
+      navigateTo(hash);
+      fetchLiveJobs();
+    });
+
+    // =========================================================================
+    // Pipeline & Ingestion Queue API Integration
+    // =========================================================================
+    let cachedJobs = [];
+    let currentFilterStage = 'ALL';
+    let activeDiagJob = null;
+
+    async function fetchLiveJobs() {
+      try {
+        const resp = await fetch('/api/v1/jobs?limit=50');
+        if (!resp.ok) return;
+        const data = await resp.json();
+        cachedJobs = data.jobs || [];
+
+        // Update counts
+        const allCount = cachedJobs.length;
+        const compCount = cachedJobs.filter(j => j.stage === 'COMPLETED' || j.stage === 'PARTIAL_SUCCESS').length;
+        const failCount = cachedJobs.filter(j => j.stage === 'FAILED').length;
+        const procCount = cachedJobs.filter(j => !['COMPLETED', 'PARTIAL_SUCCESS', 'FAILED'].includes(j.stage)).length;
+
+        document.getElementById('tab-count-all').textContent = allCount;
+        document.getElementById('tab-count-comp').textContent = compCount;
+        document.getElementById('tab-count-fail').textContent = failCount;
+        document.getElementById('tab-count-proc').textContent = procCount;
+        document.getElementById('tab-count-rev').textContent = failCount;
+
+        renderJobsTable();
+      } catch (err) {
+        console.error("fetchLiveJobs error:", err);
+      }
+    }
+
+    function filterQueueJobs(stage) {
+      currentFilterStage = stage;
+      document.querySelectorAll('.queue-tab-btn').forEach(btn => {
+        if (btn.getAttribute('data-stage') === stage) {
+          btn.className = "queue-tab-btn px-space-md py-1 rounded-lg bg-primary-container text-on-primary font-body-sm text-body-sm font-medium whitespace-nowrap shadow-sm";
+        } else {
+          btn.className = "queue-tab-btn px-space-md py-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-body-sm text-body-sm whitespace-nowrap transition-colors";
+        }
+      });
+      renderJobsTable();
+    }
+
+    function renderJobsTable() {
+      const tbody = document.getElementById('jobs-table-body');
+      const query = (document.getElementById('queue-filter-input').value || '').toLowerCase();
+
+      let filtered = cachedJobs.filter(job => {
+        if (currentFilterStage === 'PROCESSING') {
+          return !['COMPLETED', 'PARTIAL_SUCCESS', 'FAILED'].includes(job.stage);
+        } else if (currentFilterStage === 'COMPLETED') {
+          return ['COMPLETED', 'PARTIAL_SUCCESS'].includes(job.stage);
+        } else if (currentFilterStage === 'FAILED' || currentFilterStage === 'REVIEW') {
+          return job.stage === 'FAILED';
+        }
+        return true;
+      });
+
+      if (query) {
+        filtered = filtered.filter(j => j.file_name.toLowerCase().includes(query) || j.job_id.toLowerCase().includes(query));
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-8 text-center text-on-surface-variant font-body-md">
+              <span class="material-symbols-outlined text-3xl mb-1 text-outline">inbox</span>
+              <p>No document jobs found matching current filter.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(job => {
+        const isFailed = job.stage === 'FAILED';
+        const isComp = job.stage === 'COMPLETED' || job.stage === 'PARTIAL_SUCCESS';
+        const isProc = !isFailed && !isComp;
+
+        let statusBadge = '';
+        if (isComp) {
+          statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary font-label-numeric-sm font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>Verified &amp; In Sync
+          </span>`;
+        } else if (isFailed) {
+          statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-numeric-sm font-semibold">
+            <span class="material-symbols-outlined text-xs">error</span>FAILED
+          </span>`;
+        } else {
+          statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-numeric-sm font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>${job.stage} (${job.progress_percent}%)
+          </span>`;
+        }
+
+        return `
+          <tr class="hover:bg-surface-container-low/50 transition-colors group ${isFailed ? 'bg-error-container/5' : ''}">
+            <td class="py-2.5 px-space-md">
+              <div class="flex items-center gap-space-sm">
+                <span class="w-7 h-7 rounded ${isFailed ? 'bg-error text-on-error' : isComp ? 'bg-tertiary-container/20 text-tertiary' : 'bg-primary-fixed text-on-primary-fixed'} flex items-center justify-center font-micro-badge font-bold">
+                  ${job.file_type}
+                </span>
+                <div class="flex flex-col min-w-0">
+                  <span class="font-body-md-medium text-on-surface truncate">${job.file_name}</span>
+                  <span class="font-micro-badge text-on-surface-variant">${job.batch_id ? 'Batch #' + job.batch_id.slice(0, 8) : 'Direct'}</span>
+                </div>
+              </div>
+            </td>
+            <td class="py-2.5 px-space-sm font-label-numeric-sm text-on-surface-variant">${job.job_id.slice(0, 8)}...</td>
+            <td class="py-2.5 px-space-sm">
+              <span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-body-sm">${job.file_type} Document</span>
+            </td>
+            <td class="py-2.5 px-space-sm text-right font-label-numeric-sm text-on-surface">${job.total_pages > 0 ? job.total_pages + ' pgs' : '1 doc'}</td>
+            <td class="py-2.5 px-space-md">
+              <div class="flex items-center gap-1">
+                <div class="flex-1 h-1.5 rounded-full ${job.progress_percent >= 10 ? (isFailed ? 'bg-error' : 'bg-tertiary') : 'bg-surface-container-high'}"></div>
+                <div class="flex-1 h-1.5 rounded-full ${job.progress_percent >= 35 ? (isFailed ? 'bg-error' : 'bg-tertiary') : 'bg-surface-container-high'}"></div>
+                <div class="flex-1 h-1.5 rounded-full ${job.progress_percent >= 65 ? (isFailed ? 'bg-error' : 'bg-tertiary') : 'bg-surface-container-high'}"></div>
+                <div class="flex-1 h-1.5 rounded-full ${job.progress_percent >= 100 ? (isFailed ? 'bg-error' : 'bg-tertiary') : 'bg-surface-container-high'}"></div>
+              </div>
+              <div class="flex justify-between items-center mt-1 font-micro-badge text-on-surface-variant">
+                <span>${job.stage}</span>
+                <span class="${isFailed ? 'text-error font-bold' : isComp ? 'text-tertiary font-bold' : 'text-primary'}">${job.progress_percent}%</span>
+              </div>
+            </td>
+            <td class="py-2.5 px-space-sm">${statusBadge}</td>
+            <td class="py-2.5 px-space-md text-right">
+              <div class="flex items-center justify-end gap-1">
+                ${isFailed ? `
+                  <button class="px-2 py-1 rounded bg-error-container text-on-error-container font-body-sm hover:bg-error hover:text-on-error transition-colors" onclick="openDiagnostics('${job.job_id}')">Diagnostics</button>
+                  <button class="px-2 py-1 rounded bg-surface-container-low text-on-surface font-body-sm hover:bg-surface-container" onclick="retryJob('${job.job_id}')">Retry</button>
+                ` : `
+                  <button class="px-2 py-1 rounded bg-primary-container text-on-primary font-body-sm hover:bg-primary transition-colors" onclick="inspectDocumentResults('${job.document_id || ''}')">Workbench</button>
+                `}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // File Upload Handler
+    async function handleFileInput(files) {
+      if (!files || files.length === 0) return;
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+      }
+      formData.append('force_ocr', document.getElementById('chk-force-ocr').checked);
+      formData.append('provider_override', document.getElementById('opt-parser-preset').value);
+
+      document.getElementById('drop-label').textContent = `Uploading ${files.length} document(s)...`;
+
+      try {
+        const resp = await fetch('/api/v1/documents/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (resp.ok) {
+          const res = await resp.json();
+          document.getElementById('drop-label').textContent = `Batch queued (${res.total_files} files).`;
+          setTimeout(() => {
+            document.getElementById('drop-label').textContent = "Drag & drop document batches or click to upload";
+          }, 3000);
+          fetchLiveJobs();
+        } else {
+          alert('Upload failed: ' + (await resp.text()));
+        }
+      } catch (e) {
+        alert('Upload error: ' + e.message);
+      }
+    }
+
+    function handleDropUpload(e) {
+      e.preventDefault();
+      document.getElementById('drop-box').classList.remove('bg-surface-container-high');
+      if (e.dataTransfer && e.dataTransfer.files) {
+        handleFileInput(e.dataTransfer.files);
+      }
+    }
+
+    // Diagnostics Modal
+    function openDiagnostics(jobId) {
+      const job = cachedJobs.find(j => j.job_id === jobId);
+      if (!job) return;
+      activeDiagJob = job;
+      document.getElementById('diag-job-id').textContent = job.job_id;
+      document.getElementById('diag-file-name').textContent = job.file_name;
+      document.getElementById('diag-error-msg').textContent = job.error_message || 'Unspecified ingestion error';
+      document.getElementById('errorDiagnosticDrawer').classList.remove('hidden');
+    }
+
+    async function retryJob(jobId) {
+      try {
+        const resp = await fetch(`/api/v1/jobs/${jobId}/reprocess`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({force_ocr: true})
+        });
+        if (resp.ok) {
+          fetchLiveJobs();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function triggerReprocessJob() {
+      if (activeDiagJob) {
+        await retryJob(activeDiagJob.job_id);
+        document.getElementById('errorDiagnosticDrawer').classList.add('hidden');
+      }
+    }
+
+    // =========================================================================
+    // HITL Workbench Logic & Calculations
+    // =========================================================================
+    let activeRecordId = "rec-datadog-001";
+
+    function applyAutoFix() {
+      const sub = parseFloat(document.getElementById('input-subtotal').value) || 0;
+      const tax = parseFloat(document.getElementById('input-tax').value) || 0;
+      const calcTotal = sub + tax;
+      document.getElementById('input-total').value = calcTotal.toFixed(2);
+      document.getElementById('canvas-total').textContent = `$${calcTotal.toFixed(2)}`;
+      recalcDiscrepancy();
+    }
+
+    function recalcDiscrepancy() {
+      const sub = parseFloat(document.getElementById('input-subtotal').value) || 0;
+      const tax = parseFloat(document.getElementById('input-tax').value) || 0;
+      const tot = parseFloat(document.getElementById('input-total').value) || 0;
+      const calc = sub + tax;
+      const diff = calc - tot;
+
+      const banner = document.getElementById('discrepancy-banner');
+      const inputTotal = document.getElementById('input-total');
+      const hint = document.getElementById('total-status-hint');
+
+      if (Math.abs(diff) < 0.05) {
+        banner.className = "bg-emerald-50 rounded-lg p-space-sm flex items-start gap-space-sm border border-emerald-200";
+        banner.innerHTML = `<span class="material-symbols-outlined text-emerald-600 text-lg">check_circle</span>
+          <div class="flex-1"><span class="font-bold text-emerald-900">Calculations Balanced!</span>
+          <p class="text-xs text-emerald-800">Subtotal ($${sub.toFixed(2)}) + Tax ($${tax.toFixed(2)}) == Total ($${tot.toFixed(2)}).</p></div>`;
+        inputTotal.className = "w-full h-9 px-3 text-right bg-emerald-50 text-emerald-950 font-label-numeric-lg font-bold rounded outline-none ring-2 ring-emerald-500 shadow-sm";
+        hint.textContent = "Balanced";
+        hint.className = "text-xs text-emerald-600 font-semibold";
+      } else {
+        banner.className = "bg-rose-50 rounded-lg p-space-sm flex items-start gap-space-sm border border-rose-200";
+        banner.innerHTML = `<span class="material-symbols-outlined text-rose-600 text-lg">report_problem</span>
+          <div class="flex-1"><span class="font-bold text-rose-900">Math Discrepancy Flagged</span>
+          <p class="text-xs text-rose-800">Variance: $${diff > 0 ? '-' : '+'}${Math.abs(diff).toFixed(2)}. Subtotal + Tax = $${calc.toFixed(2)} ≠ Total $${tot.toFixed(2)}.</p></div>
+          <button class="bg-rose-600 text-white font-micro-badge font-bold px-2 py-1 rounded" onclick="applyAutoFix()">Auto-Fix Total</button>`;
+        inputTotal.className = "w-full h-9 px-3 text-right bg-rose-50 text-rose-950 font-label-numeric-lg font-bold rounded outline-none ring-2 ring-rose-500 shadow-sm";
+        hint.textContent = "Math Conflict";
+        hint.className = "text-xs text-rose-600 font-semibold";
+      }
+    }
+
+    async function inspectDocumentResults(documentId) {
+      if (!documentId) {
+        navigateTo('hitl-workbench');
+        return;
+      }
+      try {
+        const resp = await fetch(`/api/v1/documents/${documentId}/results`);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.extraction && data.extraction.records && data.extraction.records.length > 0) {
+            const r = data.extraction.records[0];
+            activeRecordId = r.record_id;
+            document.getElementById('workbench-vendor-title').textContent = r.supplier_name || 'Extracted Invoice';
+            document.getElementById('workbench-inv-num').textContent = '#' + (r.invoice_number || 'INV-000');
+            document.getElementById('input-inv-num').value = r.invoice_number || '';
+            document.getElementById('input-inv-date').value = r.invoice_date || '';
+            document.getElementById('input-supplier').value = r.supplier_name || '';
+            document.getElementById('input-subtotal').value = (r.subtotal || 0).toFixed(2);
+            document.getElementById('input-tax').value = (r.tax || 0).toFixed(2);
+            document.getElementById('input-total').value = (r.total || 0).toFixed(2);
+            recalcDiscrepancy();
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      navigateTo('hitl-workbench');
+    }
+
+    async function saveRecordCorrection(markAsVerified) {
+      const payload = {
+        corrected_by: "elena_vance",
+        correction_notes: document.getElementById('audit-note').value,
+        invoice_number: document.getElementById('input-inv-num').value,
+        invoice_date: document.getElementById('input-inv-date').value,
+        supplier_name: document.getElementById('input-supplier').value,
+        subtotal: parseFloat(document.getElementById('input-subtotal').value) || 0,
+        tax: parseFloat(document.getElementById('input-tax').value) || 0,
+        total: parseFloat(document.getElementById('input-total').value) || 0,
+        mark_as_verified: markAsVerified,
+      };
+
+      try {
+        const resp = await fetch(`/api/v1/records/${activeRecordId}/correct`, {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload),
+        });
+        if (resp.ok) {
+          const res = await resp.json();
+          const btn = document.getElementById('btn-approve');
+          btn.innerHTML = '<span class="material-symbols-outlined text-lg">check</span><span>Reconciled &amp; Saved!</span>';
+          btn.classList.add('bg-tertiary');
+          setTimeout(() => {
+            btn.innerHTML = '<span class="material-symbols-outlined text-lg">check_circle</span><span>Approve &amp; Verify (⌘↵)</span>';
+            btn.classList.remove('bg-tertiary');
+          }, 1500);
+        } else {
+          alert('Save failed: ' + (await resp.text()));
+        }
+      } catch (err) {
+        alert('Correction error: ' + err.message);
+      }
+    }
+
+    // =========================================================================
+    // Cross-Verification Logic
+    // =========================================================================
+    function filterCrossVerification(type) {
+      document.querySelectorAll('.filter-tab').forEach(t => {
+        if (t.getAttribute('data-filter') === type) {
+          t.className = "filter-tab active flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-surface-container-lowest text-on-surface shadow-sm transition-all";
+        } else {
+          t.className = "filter-tab flex items-center gap-space-xs px-space-md py-1.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-lowest/60 transition-all";
+        }
+      });
+      document.querySelectorAll('.reconcile-row').forEach(row => {
+        if (type === 'all' || row.getAttribute('data-type') === type) {
+          row.style.display = 'block';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    function runLiveCrossVerification() {
+      alert("Cross-Verification triggered across active documents and master ledger.");
+    }
+
+    // =========================================================================
+    // Hybrid Vector & Keyword Search Explorer
+    // =========================================================================
+    function setQuery(text) {
+      const inp = document.getElementById('search-input');
+      inp.value = text;
+      inp.focus();
+    }
+
+    function resetFacets() {
+      document.getElementById('facet-supplier').value = '';
+      document.getElementById('facet-min-total').value = '';
+      document.getElementById('facet-max-total').value = '';
+      document.getElementById('facet-status').value = '';
+      executeHybridSearch();
+    }
+
+    async function executeHybridSearch() {
+      const q = document.getElementById('search-input').value;
+      const supplier = document.getElementById('facet-supplier').value;
+      const minTot = parseFloat(document.getElementById('facet-min-total').value) || undefined;
+      const maxTot = parseFloat(document.getElementById('facet-max-total').value) || undefined;
+      const status = document.getElementById('facet-status').value || undefined;
+
+      const payload = {
+        query: q || undefined,
+        supplier: supplier || undefined,
+        min_total: minTot,
+        max_total: maxTot,
+        validation_status: status,
+      };
+
+      try {
+        const resp = await fetch('/api/v1/documents/search', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload),
+        });
+
+        if (resp.ok) {
+          const res = await resp.json();
+          document.getElementById('search-total-count').textContent = res.total;
+          renderSearchResults(res.items);
+        }
+      } catch (err) {
+        console.error("executeHybridSearch error:", err);
+      }
+    }
+
+    function renderSearchResults(items) {
+      const container = document.getElementById('search-results-list');
+      if (!items || items.length === 0) {
+        container.innerHTML = `
+          <div class="bg-surface-container-lowest rounded-xl p-space-lg text-center text-on-surface-variant border border-surface-container">
+            <span class="material-symbols-outlined text-4xl mb-2 text-outline">search_off</span>
+            <p class="font-headline-sm">No records matched your vector search parameters.</p>
+            <p class="text-sm">Try broadening your search query or clearing filters.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map(item => {
+        const rec = item.record;
+        const val = item.validation;
+        const isFlagged = val.requires_manual_review;
+
+        return `
+          <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all border-l-4 ${isFlagged ? 'border-l-error' : 'border-l-tertiary'} border border-surface-container">
+            <div class="flex flex-col lg:flex-row items-start justify-between gap-space-md">
+              <div class="flex-1 flex flex-col gap-space-xs">
+                <div class="flex items-center gap-space-sm flex-wrap">
+                  <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">${rec.invoice_number || 'INV-UNKNOWN'}</span>
+                  <span class="font-label-numeric-sm text-label-numeric-sm text-secondary">${rec.invoice_date || 'No Date'}</span>
+                  <span class="px-2 py-0.5 rounded-full ${isFlagged ? 'bg-error-container text-on-error-container' : 'bg-tertiary-container/10 text-tertiary'} font-label-numeric-sm font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">${isFlagged ? 'warning' : 'verified'}</span>
+                    ${val.validation_status}
+                  </span>
+                  <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-numeric-sm font-semibold">
+                    Hybrid RRF Matched
+                  </span>
+                </div>
+                <div class="bg-surface-container-low p-space-sm rounded-lg mt-1 flex flex-col gap-1">
+                  <span class="font-body-md font-bold text-on-surface">${rec.supplier_name || 'Unknown Supplier'}</span>
+                  <p class="font-body-sm text-on-surface-variant">Customer: ${rec.customer_name || 'N/A'} • Currency: ${rec.currency || 'USD'}</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-space-sm mt-2 pt-2 bg-surface-container/50 p-space-sm rounded-lg">
+                  <div class="flex flex-col">
+                    <span class="font-micro-badge text-secondary uppercase">Subtotal</span>
+                    <span class="font-label-numeric-sm text-on-surface">$${(rec.subtotal || 0).toFixed(2)}</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-micro-badge text-secondary uppercase">Tax</span>
+                    <span class="font-label-numeric-sm text-on-surface">$${(rec.tax || 0).toFixed(2)}</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-micro-badge text-secondary uppercase">Total Amount</span>
+                    <span class="font-label-numeric-md font-bold text-on-surface">$${(rec.total || 0).toFixed(2)}</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-micro-badge text-secondary uppercase">Status</span>
+                    <span class="font-label-numeric-sm ${isFlagged ? 'text-error font-bold' : 'text-tertiary font-bold'}">${isFlagged ? 'Review Required' : 'Auto-Verified'}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2 w-full lg:w-40 flex-shrink-0">
+                <button class="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-primary-container text-on-primary hover:bg-primary font-body-md-medium text-body-sm shadow-sm transition-all" onclick="inspectDocumentResults('${rec.source_document_id}')">
+                  <span class="material-symbols-outlined text-sm">open_in_new</span> Workbench
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Polling Interval
+    let countdown = 4;
+    setInterval(() => {
+      countdown = countdown <= 1 ? 5 : countdown - 1;
+      const el = document.getElementById('refreshTimer');
+      if (el) el.innerText = countdown + 's';
+      if (countdown === 5) {
+        fetchLiveJobs();
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

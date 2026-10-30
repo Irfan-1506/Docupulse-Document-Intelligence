@@ -1,0 +1,129 @@
+[
+  {
+    "document_id": "afef67c9-33af-4b36-a8a9-d6ce40488a2a",
+    "file_name": "corrupt_doc.pdf",
+    "file_type": "pdf",
+    "file_hash": "062f19a2a5a8e0d68dd525891478072a4b76a967fee0f7bceb4ec075b74d0d8e",
+    "status": "FAILED_CORRUPTED",
+    "total_pages_or_sheets": 0,
+    "pages": [],
+    "sheets": [],
+    "full_merged_text": "",
+    "processing_time_ms": 39.01639999821782,
+    "error_details": "Malformed or truncated PDF: Failed to open file 'C:\\\\Users\\\\Asus\\\\.gemini\\\\antigravity\\\\scratch\\\\doc_intelligence_engine\\\\samples\\\\corrupt_doc.pdf' as type pdf."
+  },
+  {
+    "document_id": "9065feae-3d85-49e2-a170-3f53e3d51b73",
+    "file_name": "earnings.pdf",
+    "file_type": "pdf",
+    "file_hash": "7f99b5b4717c2c6ce3a00b1af76472a97f2814c705b55e39fb5a7b58127641bc",
+    "status": "SUCCESS",
+    "total_pages_or_sheets": 1,
+    "pages": [
+      {
+        "page_number": 1,
+        "raw_text": "ACME HOLDINGS FINANCIAL OVERVIEW 2026\nQuarterly Operating Earnings: .2M\nNet Margin: 18.5%",
+        "extraction_method": "digital_pdf",
+        "confidence_score": 1.0,
+        "tables": [],
+        "warnings": []
+      }
+    ],
+    "sheets": [],
+    "full_merged_text": "--- Page 1 [digital_pdf] ---\nACME HOLDINGS FINANCIAL OVERVIEW 2026\nQuarterly Operating Earnings: .2M\nNet Margin: 18.5%",
+    "processing_time_ms": 500.17,
+    "error_details": null
+  },
+  {
+    "document_id": "39d212b5-26d0-48f9-93a3-bd1b64ca9386",
+    "file_name": "quarterly_metrics.csv",
+    "file_type": "csv",
+    "file_hash": "8ae7f2074d648bcb9bffb6cef2f445e529678fa042696d6ffe18a05112eaf3a3",
+    "status": "SUCCESS",
+    "total_pages_or_sheets": 1,
+    "pages": [],
+    "sheets": [
+      {
+        "sheet_name": "quarterly_metrics",
+        "row_count": 3,
+        "column_headers": [
+          "Quarter",
+          "Revenue",
+          "Expenses",
+          "Net Income"
+        ],
+        "records": [
+          {
+            "Quarter": "Q1 2026",
+            "Revenue": 1200000,
+            "Expenses": 950000,
+            "Net Income": 250000
+          },
+          {
+            "Quarter": "Q2 2026",
+            "Revenue": 1350000,
+            "Expenses": 1020000,
+            "Net Income": 330000
+          },
+          {
+            "Quarter": "Q3 2026",
+            "Revenue": 1420000,
+            "Expenses": 1080000,
+            "Net Income": 340000
+          }
+        ],
+        "markdown_preview": "| Quarter | Revenue | Expenses | Net Income |\n| --- | --- | --- | --- |\n| Q1 2026 | 1200000 | 950000 | 250000 |\n| Q2 2026 | 1350000 | 1020000 | 330000 |\n| Q3 2026 | 1420000 | 1080000 | 340000 |",
+        "summary_stats": {
+          "total_rows": 3,
+          "total_columns": 4,
+          "column_names": [
+            "Quarter",
+            "Revenue",
+            "Expenses",
+            "Net Income"
+          ],
+          "data_types": {
+            "Quarter": "object",
+            "Revenue": "int64",
+            "Expenses": "int64",
+            "Net Income": "int64"
+          },
+          "null_counts": {
+            "Quarter": 0,
+            "Revenue": 0,
+            "Expenses": 0,
+            "Net Income": 0
+          },
+          "numeric_columns": [
+            "Revenue",
+            "Expenses",
+            "Net Income"
+          ],
+          "numeric_metrics": {
+            "Revenue": {
+              "min": 1200000.0,
+              "max": 1420000.0,
+              "mean": 1323333.3333,
+              "sum": 3970000.0
+            },
+            "Expenses": {
+              "min": 950000.0,
+              "max": 1080000.0,
+              "mean": 1016666.6667,
+              "sum": 3050000.0
+            },
+            "Net Income": {
+              "min": 250000.0,
+              "max": 340000.0,
+              "mean": 306666.6667,
+              "sum": 920000.0
+            }
+          }
+        }
+      }
+    ],
+    "full_merged_text": "### Sheet: quarterly_metrics\n| Quarter | Revenue | Expenses | Net Income |\n| --- | --- | --- | --- |\n| Q1 2026 | 1200000 | 950000 | 250000 |\n| Q2 2026 | 1350000 | 1020000 | 330000 |\n| Q3 2026 | 1420000 | 1080000 | 340000 |",
+    "processing_time_ms": 180.04,
+    "error_details": null
+  }
+]
