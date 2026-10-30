@@ -1,0 +1,44 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite / Local runtime databases
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+
+# Uploaded test files and temporary scratch
+data/uploads/*
+!data/uploads/.gitkeep
+data/temp/*
+!data/temp/.gitkeep
+data/synthetic_golden_dataset/
+
+# Local archives
+*.zip
+*.tar.gz
+
+# Environments & secrets
+.env
+.env.local
+.venv
+env/
+venv/
+ENV/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.log
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
