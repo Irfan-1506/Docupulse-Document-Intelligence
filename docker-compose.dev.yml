@@ -1,0 +1,29 @@
+version: "3.9"
+
+# ==============================================================================
+# DocuPulse Enterprise AP v4.2 - Development Docker Compose Override
+# Enables hot-reloading on src/, static/, and interactive debugging.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# ==============================================================================
+
+services:
+  api:
+    command: ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    environment:
+      APP_ENV: development
+      LOG_LEVEL: DEBUG
+    volumes:
+      - ./src:/app/src
+      - ./static:/app/static
+      - ./scripts:/app/scripts
+      - ./alembic:/app/alembic
+      - ./data/uploads:/app/data/uploads
+
+  worker:
+    environment:
+      APP_ENV: development
+      LOG_LEVEL: DEBUG
+    volumes:
+      - ./src:/app/src
+      - ./scripts:/app/scripts
+      - ./data/uploads:/app/data/uploads

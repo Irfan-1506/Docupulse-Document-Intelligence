@@ -199,3 +199,58 @@ The benchmark evaluates field-level extraction accuracy and operational latency 
 Reports are automatically generated and saved to:
 - `reports/evaluation_benchmark.json` (Structured machine-readable benchmark metrics)
 - `reports/evaluation_benchmark.md` (Executive summary table with field-level breakdowns)
+
+
+---
+
+## Engineering Report & PDF Export (Deliverables 2–7 & 9)
+
+A comprehensive, enterprise-grade engineering report consolidating all deliverables, architecture diagrams, data schemas, mathematical validation rules, and benchmark results is located at [`docs/ENGINEERING_REPORT.md`](file:///C:/Users/Asus/.gemini/antigravity/scratch/doc_intelligence_engine/docs/ENGINEERING_REPORT.md).
+
+To generate or re-compile the high-fidelity 22-page publication PDF:
+
+```bash
+python scripts/export_report_pdf.py
+```
+
+The compiled PDF is saved to:
+- [`docs/DocuPulse_Enterprise_AP_v4.2_Engineering_Report.pdf`](file:///C:/Users/Asus/.gemini/antigravity/scratch/doc_intelligence_engine/docs/DocuPulse_Enterprise_AP_v4.2_Engineering_Report.pdf)
+
+---
+
+## Docker Containerization & Production Deployment
+
+DocuPulse provides a complete multi-stage, security-hardened `Dockerfile` and `docker-compose.yml` orchestrating:
+1. **`postgres`**: PostgreSQL 16 + `pgvector` (`pgvector/pgvector:pg16`) with HNSW cosine distance indexing.
+2. **`redis`**: Redis 7 Alpine (`redis:7-alpine`) task broker for distributed job queuing.
+3. **`api`**: FastAPI REST API server with health checks and static workbench UI.
+4. **`worker`**: Background worker processing multi-stage document ingestion, OCR, LLM extraction, and validation.
+
+### Deployment Commands
+
+```bash
+# 1. Configure environment variables
+cp .env.example .env
+
+# 2. Build and launch production cluster
+docker compose up -d --build
+
+# 3. Check container status & health
+docker compose ps
+
+# 4. Stream cluster logs
+docker compose logs -f
+
+# 5. Stop cluster
+docker compose down
+```
+
+For local development with live code reload:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
+Alternatively, use the included lifecycle scripts:
+- PowerShell: `.\scripts\manage_containers.ps1 {build|up|dev|down|status|logs|test-health|clean}`
+- Bash: `./scripts/manage_containers.sh {build|up|dev|down|status|logs|test-health|clean}`

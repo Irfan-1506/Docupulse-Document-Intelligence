@@ -1,0 +1,133 @@
+version: "3.9"
+
+# ==============================================================================
+# DocuPulse Enterprise AP v4.2 - Production Docker Compose Orchestration
+# Services: PostgreSQL 16 + pgvector, Redis 7, FastAPI Backend API, Async Worker
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Relational Database with pgvector (PostgreSQL 16)
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: docupulse_postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-docupulse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-docupulse_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-docupulse_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-docupulse} -d ${POSTGRES_DB:-docupulse_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+    networks:
+      - docupulse_net
+
+  # ----------------------------------------------------------------------------
+  # 2. Redis Distributed Task Queue & Telemetry Broker
+  # ----------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: docupulse_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - docupulse_net
+
+  # ----------------------------------------------------------------------------
+  # 3. DocuPulse REST API Server (FastAPI + Uvicorn)
+  # ----------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: docupulse_api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-docupulse}:${POSTGRES_PASSWORD:-docupulse_secret}@postgres:5432/${POSTGRES_DB:-docupulse_db}
+      REDIS_URL: redis://redis:6379/0
+      RUN_MIGRATIONS: "true"
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      APP_ENV: production
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      UPLOAD_DIR: /app/data/uploads
+    volumes:
+      - doc_storage:/app/data/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - docupulse_net
+
+  # ----------------------------------------------------------------------------
+  # 4. DocuPulse Background Document Processing Worker
+  # ----------------------------------------------------------------------------
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: docupulse_worker
+    restart: unless-stopped
+    command: ["python", "-m", "src.api.worker"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-docupulse}:${POSTGRES_PASSWORD:-docupulse_secret}@postgres:5432/${POSTGRES_DB:-docupulse_db}
+      REDIS_URL: redis://redis:6379/0
+      RUN_MIGRATIONS: "false"
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      APP_ENV: production
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      UPLOAD_DIR: /app/data/uploads
+    volumes:
+      - doc_storage:/app/data/uploads
+    networks:
+      - docupulse_net
+
+# ==============================================================================
+# Persistent Volumes & Network Topology
+# ==============================================================================
+volumes:
+  postgres_data:
+    name: docupulse_postgres_data
+  redis_data:
+    name: docupulse_redis_data
+  doc_storage:
+    name: docupulse_document_storage
+
+networks:
+  docupulse_net:
+    name: docupulse_network
+    driver: bridge
