@@ -192,6 +192,10 @@ class DocumentStore:
         """Retrieve all active invoice records across all documents."""
         return self._bridge.run(self.repo.get_all_records())
 
+    def verify_audit_trail_integrity(self, record_id: str) -> tuple[bool, Optional[str]]:
+        """Cryptographically verify the hash chain integrity for an invoice record's audit log."""
+        return self._bridge.run(self.repo.verify_audit_trail_integrity(record_id))
+
     # =========================================================================
     # Search & Filtering
     # =========================================================================

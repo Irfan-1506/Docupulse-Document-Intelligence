@@ -138,8 +138,15 @@ def validate_file_integrity(
     return True, DocumentStatus.SUCCESS, norm_type, None
 
 
+MAX_PDF_PAGES = 2000
+MAX_IMAGE_PIXELS = 50_000_000  # 50 Megapixels
+MAX_ZIP_UNCOMPRESSED_BYTES = 100 * 1024 * 1024  # 100 MB
+MAX_ZIP_COMPRESSION_RATIO = 100.0  # 100:1 ratio ceiling
+MAX_ZIP_ENTRIES = 1000
+
+
 def _validate_pdf_deep(file_path: Path) -> Tuple[bool, DocumentStatus, str, Optional[str]]:
-    """Deep inspection of PDF container and encryption status."""
+    """Deep inspection of PDF container, page count, and encryption status."""
     try:
         doc = pymupdf.open(file_path)
         if doc.is_encrypted or doc.needs_pass:
@@ -154,6 +161,14 @@ def _validate_pdf_deep(file_path: Path) -> Tuple[bool, DocumentStatus, str, Opti
         if page_count == 0:
             doc.close()
             return False, DocumentStatus.FAILED_CORRUPTED, "pdf", "PDF file contains 0 pages."
+        if page_count > MAX_PDF_PAGES:
+            doc.close()
+            return (
+                False,
+                DocumentStatus.FAILED_CORRUPTED,
+                "pdf",
+                f"PDF page count ({page_count}) exceeds maximum threshold of {MAX_PDF_PAGES} pages.",
+            )
         # Read first page to verify xref catalog integrity
         _ = doc[0].get_text()
         doc.close()
@@ -163,11 +178,23 @@ def _validate_pdf_deep(file_path: Path) -> Tuple[bool, DocumentStatus, str, Opti
 
 
 def _validate_image_deep(file_path: Path, norm_type: str) -> Tuple[bool, DocumentStatus, str, Optional[str]]:
-    """Deep inspection of standalone image files."""
+    """Deep inspection of standalone image files and pixel flood DoS guard."""
     try:
+        # Enforce PIL decompression bomb limit
+        Image.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
+
         with Image.open(file_path) as img:
+            w, h = img.size
+            if w * h > MAX_IMAGE_PIXELS:
+                return (
+                    False,
+                    DocumentStatus.FAILED_CORRUPTED,
+                    norm_type,
+                    f"Image dimensions ({w}x{h} = {w*h} pixels) exceed maximum allowed pixel limit ({MAX_IMAGE_PIXELS}).",
+                )
             img.verify()
-        # Verify again by actually loading pixels (verify can pass corrupted payloads)
+
+        # Verify again by actually loading pixels
         with Image.open(file_path) as img:
             img.load()
         return True, DocumentStatus.SUCCESS, norm_type, None
@@ -176,11 +203,41 @@ def _validate_image_deep(file_path: Path, norm_type: str) -> Tuple[bool, Documen
 
 
 def _validate_xlsx_deep(file_path: Path) -> Tuple[bool, DocumentStatus, str, Optional[str]]:
-    """Deep inspection of XLSX ZIP/XML packaging."""
+    """Deep inspection of XLSX ZIP/XML packaging and decompression bomb defense."""
     try:
         if not zipfile.is_zipfile(file_path):
             return False, DocumentStatus.FAILED_CORRUPTED, "xlsx", "XLSX file is not a valid ZIP archive."
         with zipfile.ZipFile(file_path, "r") as zf:
+            entries = zf.infolist()
+            if len(entries) > MAX_ZIP_ENTRIES:
+                return (
+                    False,
+                    DocumentStatus.FAILED_CORRUPTED,
+                    "xlsx",
+                    f"XLSX archive exceeds maximum entry limit ({len(entries)} > {MAX_ZIP_ENTRIES}).",
+                )
+
+            total_uncompressed = 0
+            total_compressed = 0
+            for info in entries:
+                total_uncompressed += info.file_size
+                total_compressed += info.compress_size
+                if total_uncompressed > MAX_ZIP_UNCOMPRESSED_BYTES:
+                    return (
+                        False,
+                        DocumentStatus.FAILED_CORRUPTED,
+                        "xlsx",
+                        f"XLSX archive uncompressed size exceeds {MAX_ZIP_UNCOMPRESSED_BYTES // (1024*1024)}MB limit (ZIP bomb protection).",
+                    )
+
+            if total_compressed > 0 and (total_uncompressed / total_compressed) > MAX_ZIP_COMPRESSION_RATIO:
+                return (
+                    False,
+                    DocumentStatus.FAILED_CORRUPTED,
+                    "xlsx",
+                    f"XLSX compression ratio ({total_uncompressed/total_compressed:.1f}:1) exceeds safe limit ({MAX_ZIP_COMPRESSION_RATIO}:1).",
+                )
+
             bad_file = zf.testzip()
             if bad_file:
                 return False, DocumentStatus.FAILED_CORRUPTED, "xlsx", f"Corrupt entry in XLSX archive: {bad_file}"

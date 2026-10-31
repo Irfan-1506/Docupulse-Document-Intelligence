@@ -1430,6 +1430,16 @@
 
   <!-- APPLICATION LOGIC SCRIPT -->
   <script>
+    // HTML Sanitization for XSS Defense (SEC-10)
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
     // Navigation Routing State
     const navItems = document.querySelectorAll('.nav-item');
     const viewPanels = document.querySelectorAll('.view-panel');
@@ -1705,17 +1715,17 @@
             <td class="py-2.5 px-space-md">
               <div class="flex items-center gap-space-sm">
                 <span class="w-7 h-7 rounded ${isFailed ? 'bg-error text-on-error' : isComp ? 'bg-tertiary-container/20 text-tertiary' : 'bg-primary-fixed text-on-primary-fixed'} flex items-center justify-center font-micro-badge font-bold">
-                  ${job.file_type}
+                  ${escapeHTML(job.file_type)}
                 </span>
                 <div class="flex flex-col min-w-0">
-                  <span class="font-body-md-medium text-on-surface truncate">${job.file_name}</span>
+                  <span class="font-body-md-medium text-on-surface truncate">${escapeHTML(job.file_name)}</span>
                   <span class="font-micro-badge text-on-surface-variant">${job.batch_id ? 'Batch #' + job.batch_id.slice(0, 8) : 'Direct'}</span>
                 </div>
               </div>
             </td>
-            <td class="py-2.5 px-space-sm font-label-numeric-sm text-on-surface-variant">${job.job_id.slice(0, 8)}...</td>
+            <td class="py-2.5 px-space-sm font-label-numeric-sm text-on-surface-variant">${escapeHTML(job.job_id.slice(0, 8))}...</td>
             <td class="py-2.5 px-space-sm">
-              <span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-body-sm">${job.file_type} Document</span>
+              <span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-body-sm">${escapeHTML(job.file_type)} Document</span>
             </td>
             <td class="py-2.5 px-space-sm text-right font-label-numeric-sm text-on-surface">${job.total_pages > 0 ? job.total_pages + ' pgs' : '1 doc'}</td>
             <td class="py-2.5 px-space-md">
@@ -1845,7 +1855,7 @@
         const isSel = j.document_id === currentActiveDocId;
         const ftype = (j.file_type || '').toUpperCase();
         const icon = ftype === 'PDF' ? '📄' : (ftype === 'CSV' || ftype === 'XLSX' ? '📊' : '📁');
-        return `<option value="${j.document_id}" ${isSel ? 'selected' : ''}>${icon} [${ftype}] ${j.file_name} (${j.stage})</option>`;
+        return `<option value="${j.document_id}" ${isSel ? 'selected' : ''}>${icon} [${ftype}] ${escapeHTML(j.file_name)} (${j.stage})</option>`;
       }).join('');
 
       const counter = document.getElementById('workbench-file-counter');
@@ -2029,7 +2039,7 @@
           lineItemsContainer.innerHTML = items.map((it, idx) => `
             <div class="relative py-2 px-space-sm flex justify-between items-center text-body-sm font-body-sm ${idx % 2 === 1 ? 'bg-surface-container-low/20' : 'bg-surface-container-lowest'}">
               <span class="w-16 font-label-numeric-sm text-outline">#${idx + 1}</span>
-              <span class="flex-1 font-medium text-on-surface">${it.description || 'Service / Item'}</span>
+              <span class="flex-1 font-medium text-on-surface">${escapeHTML(it.description || 'Service / Item')}</span>
               <span class="w-12 text-center font-label-numeric-sm">${it.quantity || 1}</span>
               <span class="w-20 text-right font-label-numeric-sm">$${Number(it.unit_price || it.line_total || 0).toFixed(2)}</span>
               <span class="w-24 text-right font-label-numeric-sm font-bold text-on-surface">$${Number(it.line_total || 0).toFixed(2)}</span>
@@ -2065,7 +2075,7 @@
             } else {
               lineItemsContainer.innerHTML = `
                 <div class="py-4 text-center text-on-surface-variant font-body-sm bg-surface-container-lowest">
-                  <p class="font-medium text-on-surface">Spreadsheet Sheet: ${firstSheet.sheet_name || 'Master'}</p>
+                  <p class="font-medium text-on-surface">Spreadsheet Sheet: ${escapeHTML(firstSheet.sheet_name || 'Master')}</p>
                   <span class="text-xs text-outline">${firstSheet.row_count || 0} rows indexed. Check Raw Page OCR view for complete dump.</span>
                 </div>
               `;
@@ -2513,10 +2523,10 @@
             <div class="grid grid-cols-12 gap-space-sm items-center">
               <div class="col-span-4 flex flex-col gap-0.5 min-w-0 pr-space-xs">
                 <div class="flex items-center gap-1.5">
-                  <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">INV-${item.invoice_number || '---'}</span>
-                  <span class="text-[10px] bg-surface-container px-1 rounded text-on-surface-variant truncate">${item.file_name}</span>
+                  <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">INV-${escapeHTML(item.invoice_number || '---')}</span>
+                  <span class="text-[10px] bg-surface-container px-1 rounded text-on-surface-variant truncate">${escapeHTML(item.file_name)}</span>
                 </div>
-                <span class="font-body-md-medium text-body-md-medium text-on-surface truncate">${item.supplier_name}</span>
+                <span class="font-body-md-medium text-body-md-medium text-on-surface truncate">${escapeHTML(item.supplier_name)}</span>
                 <span class="font-label-numeric-md text-label-numeric-md font-bold ${isDiscrepancy ? 'text-error' : 'text-on-surface'}">$${Number(item.total).toFixed(2)}</span>
               </div>
               <div class="col-span-4 flex flex-col items-center justify-center gap-1 px-space-xs text-center">
@@ -2531,8 +2541,8 @@
                 </button>
               </div>
               <div class="col-span-4 flex flex-col gap-0.5 min-w-0 pl-space-xs text-right">
-                <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">${targetRowRef}</span>
-                <span class="font-body-md-medium text-body-md-medium text-on-surface truncate">${targetSupplier}</span>
+                <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">${escapeHTML(targetRowRef)}</span>
+                <span class="font-body-md-medium text-body-md-medium text-on-surface truncate">${escapeHTML(targetSupplier)}</span>
                 <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">$${Number(targetTotal).toFixed(2)}</span>
               </div>
             </div>
@@ -2696,10 +2706,10 @@
       }
       const targetRowRef = cv.target_reference_id && cv.target_reference_id !== 'None' ? cv.target_reference_id : 'Unlinked';
 
-      document.getElementById('modal-diff-title').textContent = `Reconciliation: INV-${item.invoice_number || '---'}`;
-      document.getElementById('modal-diff-subtitle').textContent = `${item.file_name} ⟷ ${targetRowRef}`;
+      document.getElementById('modal-diff-title').textContent = `Reconciliation: INV-${escapeHTML(item.invoice_number || '---')}`;
+      document.getElementById('modal-diff-subtitle').textContent = `${escapeHTML(item.file_name)} ⟷ ${escapeHTML(targetRowRef)}`;
       document.getElementById('modal-diff-src-total').textContent = `$${Number(item.total).toFixed(2)}`;
-      document.getElementById('modal-diff-src-file').textContent = `${item.file_name} • ${item.supplier_name || 'Vendor'}`;
+      document.getElementById('modal-diff-src-file').textContent = `${escapeHTML(item.file_name)} • ${item.supplier_name || 'Vendor'}`;
       document.getElementById('modal-diff-ref-total').textContent = matchStatus === 'UNMATCHED_ORPHAN' ? 'N/A' : `$${Number(refTotal).toFixed(2)}`;
       document.getElementById('modal-diff-ref-row').textContent = matchStatus === 'UNMATCHED_ORPHAN' ? 'Not in Target Ledger' : targetRowRef;
       document.getElementById('modal-diff-rec-id').textContent = `Record ID: ${item.record_id}`;
@@ -3152,19 +3162,19 @@
             <div class="flex flex-col lg:flex-row items-start justify-between gap-space-md">
               <div class="flex-1 flex flex-col gap-space-xs">
                 <div class="flex items-center gap-space-sm flex-wrap">
-                  <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">${rec.invoice_number || 'INV-UNKNOWN'}</span>
-                  <span class="font-label-numeric-sm text-label-numeric-sm text-secondary">${rec.invoice_date || 'No Date'}</span>
+                  <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">${escapeHTML(rec.invoice_number || 'INV-UNKNOWN')}</span>
+                  <span class="font-label-numeric-sm text-label-numeric-sm text-secondary">${escapeHTML(rec.invoice_date || 'No Date')}</span>
                   <span class="px-2 py-0.5 rounded-full ${isFlagged ? 'bg-error-container text-on-error-container' : 'bg-tertiary-container/10 text-tertiary'} font-label-numeric-sm font-semibold flex items-center gap-1">
                     <span class="material-symbols-outlined text-xs">${isFlagged ? 'warning' : 'verified'}</span>
-                    ${val.validation_status}
+                    ${escapeHTML(val.validation_status)}
                   </span>
                   <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-numeric-sm font-semibold">
                     Hybrid RRF Matched
                   </span>
                 </div>
                 <div class="bg-surface-container-low p-space-sm rounded-lg mt-1 flex flex-col gap-1">
-                  <span class="font-body-md font-bold text-on-surface">${rec.supplier_name || 'Unknown Supplier'}</span>
-                  <p class="font-body-sm text-on-surface-variant">Customer: ${rec.customer_name || 'N/A'} • Currency: ${rec.currency || 'USD'}</p>
+                  <span class="font-body-md font-bold text-on-surface">${escapeHTML(rec.supplier_name || 'Unknown Supplier')}</span>
+                  <p class="font-body-sm text-on-surface-variant">Customer: ${escapeHTML(rec.customer_name || 'N/A')} • Currency: ${escapeHTML(rec.currency || 'USD')}</p>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-space-sm mt-2 pt-2 bg-surface-container/50 p-space-sm rounded-lg">
                   <div class="flex flex-col">

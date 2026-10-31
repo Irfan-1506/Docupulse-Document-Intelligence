@@ -16,6 +16,8 @@ from src.api.schemas import (
     ReprocessJobRequest,
 )
 from src.api.store import DocumentStore, get_global_store
+from src.auth.dependencies import UserContext, require_permission
+from src.auth.rbac import Permission
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +40,7 @@ def get_queue(store: DocumentStore = Depends(get_store)) -> BaseJobQueue:
 def get_job_status(
     job_id: str,
     store: DocumentStore = Depends(get_store),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_READ)),
 ) -> JobStatusResponse:
     """Retrieve current processing stage, progress percentage, and diagnostics for a job."""
     job = store.get_job(job_id)
@@ -57,6 +60,7 @@ def get_job_status(
 def get_batch_status(
     batch_id: str,
     store: DocumentStore = Depends(get_store),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_READ)),
 ) -> BatchStatusResponse:
     """Retrieve batch-level progress summary including completed, in-progress, and failed jobs."""
     jobs = store.get_batch_jobs(batch_id)
@@ -91,6 +95,7 @@ def list_jobs(
     skip: int = Query(0, ge=0, description="Pagination offset"),
     limit: int = Query(50, ge=1, le=200, description="Page size"),
     store: DocumentStore = Depends(get_store),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_READ)),
 ) -> JobsListResponse:
     """List jobs filtered by batch or stage, with summary counts by stage."""
     return store.list_jobs(batch_id=batch_id, stage=stage, skip=skip, limit=limit)
@@ -106,6 +111,7 @@ async def reprocess_job(
     payload: Optional[ReprocessJobRequest] = None,
     store: DocumentStore = Depends(get_store),
     queue: BaseJobQueue = Depends(get_queue),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_REPROCESS)),
 ) -> JobStatusResponse:
     """Re-enqueue an existing job, resetting progress while preserving historical retry counts."""
     job = store.get_job(job_id)

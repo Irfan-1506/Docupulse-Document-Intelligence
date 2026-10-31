@@ -16,7 +16,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from src.api.queue import get_job_queue
-from src.api.routes import documents, jobs, records
+from src.api.routes import auth, documents, jobs, records
 from src.api.schemas import JobStage
 from src.api.store import DocumentStore, get_global_store
 
@@ -71,15 +71,50 @@ app = FastAPI(
 )
 
 # ---------------------------------------------------------------------------
-# CORS Middleware Configuration (React / Next.js Frontend)
+# CORS & Security Headers Middleware Configuration
 # ---------------------------------------------------------------------------
+import os
+
+cors_origins_env = os.getenv("CORS_ALLOWED_ORIGINS", "")
+if cors_origins_env:
+    allowed_origins = [orig.strip() for orig in cors_origins_env.split(",") if orig.strip()]
+else:
+    allowed_origins = [
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://192.168.68.104:8000",
+    ]
+
+# In local non-production environments, allow origin reflections if not strictly constrained
+is_production = os.getenv("ENVIRONMENT", "development").lower() == "production"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins if is_production else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    """Enforce defense-in-depth enterprise HTTP security headers."""
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: blob:; "
+        "connect-src 'self' http: https: ws: wss:;"
+    )
+    return response
 
 
 # ---------------------------------------------------------------------------
@@ -287,6 +322,7 @@ def get_system_telemetry(
 # ---------------------------------------------------------------------------
 # Router Inclusions
 # ---------------------------------------------------------------------------
+app.include_router(auth.router, prefix="/api/v1")
 app.include_router(documents.router, prefix="/api/v1")
 app.include_router(jobs.router, prefix="/api/v1")
 app.include_router(records.router, prefix="/api/v1")

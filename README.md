@@ -161,13 +161,56 @@ The system includes a single-page web application served directly from `/` (via 
 
 ## Running the Automated Test Suite & Code Coverage
 
-Run all 59 unit and integration tests across Tasks 1 through 7 and Phase 1 distributed components with code coverage:
+Run all 77 unit, integration, and security tests across Tasks 1 through 7, Phase 1 distributed components, and Phase 2 enterprise security engineering:
 
-```bash
-pytest --cov=src --cov-report=term-missing -v
-```
+`ash
+# Run full regression suite (76 passed, 1 skipped)
+pytest -v
 
-All 59 unit and integration tests execute completely offline without requiring live external services, using simulated fixtures or against production Redis/PostgreSQL containers. Complete Phase 1 audit and verification reports are preserved in reports/phase1/.
+# Run Phase 2 Enterprise Security Test Suite (18 tests)
+pytest tests/security/ -v
+`
+
+All 77 unit, integration, and security tests execute completely offline without requiring live external services, using simulated fixtures or against production Redis/PostgreSQL containers. Complete Phase 1 audit and verification reports are preserved in 
+eports/phase1/, and complete Phase 2 security audits, threat models, and ASVS checklists are preserved in 
+eports/phase2/.
+
+---
+
+## Phase 2: Enterprise Security Engineering
+
+DocuPulse Enterprise v4.3 incorporates enterprise-grade security controls aligned with **OWASP Top 10** and **OWASP ASVS v4.0.3 Level 2**:
+
+### 1. Authentication & Session Management
+- **Argon2id Hashing:** Industry-standard password hashing via pwdlib[argon2] with per-hash salt and memory-hard configuration.
+- **JWT Rotation & Revocation:** Cryptographically signed short-lived access tokens (15m expiry) and single-use rotating refresh tokens (7d expiry) hashed with SHA-256 in the database.
+- **Brute-Force Lockout:** Automatic account lockout for 15 minutes after 5 consecutive failed authentication attempts.
+- **Session Endpoints:**
+  - POST /api/v1/auth/register — User registration with email normalization and policy enforcement.
+  - POST /api/v1/auth/login — Authenticates credentials, rotates refresh token, returns Bearer token and Secure/HttpOnly cookie.
+  - POST /api/v1/auth/refresh — Single-use refresh token exchange with replay detection.
+  - POST /api/v1/auth/logout — Revokes refresh session and clears cookie.
+  - GET /api/v1/auth/me — Returns current authenticated user and role context.
+
+### 2. Role-Based Access Control (RBAC) & Multi-Tenancy
+- **5 Granular Roles:** SUPER_ADMIN, TENANT_ADMIN, FINANCE_MANAGER, DOCUMENT_REVIEWER, VIEWER.
+- **9 Explicit Permissions:** document:create, document:read, document:delete, document:review, document:reprocess, nalytics:read, user:manage, 	enant:manage, udit:read.
+- **Strict Multi-Tenant Isolation:** Complete logical tenant partitioning enforced across database schemas (	enants, users, 	enant_memberships), document records, processing jobs, and vector embeddings via 	enant_id.
+
+### 3. Upload & File Ingestion Hardening
+- **Decompression Bomb Defense:** Maximum compression ratio capped at 100:1, uncompressed byte ceiling of 100 MB, and maximum file count of 1,000 entries.
+- **Pixel Flood Defense:** Image pixel ceiling capped at 50 megapixels (MAX_IMAGE_PIXELS = 50_000_000) before decoding.
+- **PDF Page Flood Protection:** Hard cap of 2,000 pages per document.
+- **Upload Size Ceiling:** Enforced 50 MB HTTP payload limit with 413 Content Too Large response.
+- **CSV/Spreadsheet Formula Injection Defense:** Dynamic prefix sanitization for formula trigger characters (=, +, -, @, 	, ).
+
+### 4. Cryptographic Audit Log Integrity & XSS Defense
+- **SHA-256 Hash Chaining:** Reviewer mutations are cryptographically chained (
+ecord_hash = SHA-256(prev_hash : entry_id : record_id : actor : field : old_val : new_val)).
+- **Audit Verification Endpoint:** GET /api/v1/records/{record_id}/audit/verify dynamically validates chain integrity and flags tampering.
+- **Server-Derived Identity:** Reviewer mutation actor identity is strictly extracted from server-validated JWT claims, neutralizing reviewer spoofing (SEC-04).
+- **Stored XSS Elimination:** Dynamic DOM interpolations in the web workbench are safely escaped with escapeHTML().
+- **HTTP Security Headers:** Strict CSP, X-Content-Type-Options: nosniff, X-Frame-Options: DENY, Referrer-Policy: strict-origin-when-cross-origin, and restricted Permissions-Policy.
 
 ---
 

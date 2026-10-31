@@ -110,6 +110,27 @@ async def init_db(engine: Optional[AsyncEngine] = None) -> None:
         await conn.run_sync(Base.metadata.create_all)
         logger.info(f"Database schema initialized successfully on {eng.dialect.name}.")
 
+    # Seed default enterprise tenant for legacy and system isolation
+    factory = get_session_factory(eng)
+    async with factory() as session:
+        from src.db.models import DEFAULT_TENANT_ID, TenantModel
+        from sqlalchemy import select
+        try:
+            res = await session.execute(select(TenantModel).where(TenantModel.id == DEFAULT_TENANT_ID))
+            if not res.scalar_one_or_none():
+                default_tenant = TenantModel(
+                    id=DEFAULT_TENANT_ID,
+                    name="Default Enterprise Tenant",
+                    slug="default-tenant",
+                    status="ACTIVE",
+                )
+                session.add(default_tenant)
+                await session.commit()
+                logger.info(f"Seeded default enterprise tenant: {DEFAULT_TENANT_ID}")
+        except Exception as exc:
+            await session.rollback()
+            logger.debug(f"Default tenant seeding notice: {exc}")
+
 
 async def drop_db(engine: Optional[AsyncEngine] = None) -> None:
     """Drop all tables in database (used for testing cleanups)."""

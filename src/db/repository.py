@@ -5,10 +5,11 @@ from __future__ import annotations
 import asyncio
 import concurrent.futures
 from datetime import date, datetime, timezone
+import hashlib
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import delete, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
@@ -757,8 +758,22 @@ class SQLAlchemyRepository:
                     )
                     session.add(vm)
 
-                # Append audit entries
+                # Append audit entries with cryptographic hash chaining (SEC-04 / SEC-11)
+                last_log_stmt = (
+                    select(AuditLogModel)
+                    .where(AuditLogModel.record_id == record_id)
+                    .order_by(AuditLogModel.timestamp.desc())
+                    .limit(1)
+                )
+                last_log = (await session.execute(last_log_stmt)).scalar_one_or_none()
+                current_prev_hash = last_log.record_hash if (last_log and last_log.record_hash) else ("0" * 64)
+
                 for entry in audit_entries:
+                    old_str = str(entry.old_value) if entry.old_value is not None else ""
+                    new_str = str(entry.new_value) if entry.new_value is not None else ""
+                    raw_payload = f"{current_prev_hash}:{entry.entry_id}:{record_id}:{entry.actor}:{entry.field_changed}:{old_str}:{new_str}"
+                    entry_hash = hashlib.sha256(raw_payload.encode("utf-8")).hexdigest()
+
                     am = AuditLogModel(
                         id=entry.entry_id,
                         record_id=record_id,
@@ -767,11 +782,41 @@ class SQLAlchemyRepository:
                         old_value=str(entry.old_value) if entry.old_value is not None else None,
                         new_value=str(entry.new_value) if entry.new_value is not None else None,
                         notes=entry.notes,
+                        prev_hash=current_prev_hash,
+                        record_hash=entry_hash,
                         timestamp=entry.timestamp,
                     )
                     session.add(am)
+                    current_prev_hash = entry_hash
 
         return await self.get_record(record_id)
+
+    async def verify_audit_trail_integrity(self, record_id: str) -> Tuple[bool, Optional[str]]:
+        """Cryptographically verify the hash chain integrity for an invoice record's audit log.
+
+        Returns:
+            Tuple of (is_valid, failure_reason)
+        """
+        async with self.session_factory() as session:
+            stmt = select(AuditLogModel).where(AuditLogModel.record_id == record_id).order_by(AuditLogModel.timestamp.asc())
+            logs = (await session.execute(stmt)).scalars().all()
+            if not logs:
+                return True, None
+
+            expected_prev = "0" * 64
+            for idx, log in enumerate(logs):
+                if log.prev_hash != expected_prev:
+                    return False, f"Broken chain at index {idx}: expected prev_hash {expected_prev}, found {log.prev_hash}"
+                old_str = log.old_value or ""
+                new_str = log.new_value or ""
+                expected_hash = hashlib.sha256(
+                    f"{log.prev_hash}:{log.id}:{record_id}:{log.actor}:{log.field_changed}:{old_str}:{new_str}".encode("utf-8")
+                ).hexdigest()
+                if log.record_hash != expected_hash:
+                    return False, f"Tampered record at index {idx} ({log.id}): hash mismatch {log.record_hash} != {expected_hash}"
+                expected_prev = log.record_hash
+
+            return True, None
 
     async def get_all_records(self) -> List[InvoiceExtractionRecord]:
         """Fetch all active extracted invoice records across documents."""

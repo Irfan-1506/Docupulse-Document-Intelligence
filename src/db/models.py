@@ -20,6 +20,7 @@ from sqlalchemy import (
     String,
     Text,
     TypeDecorator,
+    UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -73,11 +74,134 @@ class VectorType(TypeDecorator):
         return value
 
 
+DEFAULT_TENANT_ID = "default-enterprise-tenant"
+
+
+class TenantModel(Base):
+    """Multi-tenant organization boundary record."""
+    __tablename__ = "tenants"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    slug: Mapped[str] = mapped_column(String(100), unique=True, index=True, nullable=False)
+    status: Mapped[str] = mapped_column(String(50), default="ACTIVE", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    memberships: Mapped[List[TenantMembershipModel]] = relationship(
+        "TenantMembershipModel",
+        back_populates="tenant",
+        cascade="all, delete-orphan",
+    )
+
+
+class UserModel(Base):
+    """Enterprise user identity record with Argon2id password hash."""
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    full_name: Mapped[str] = mapped_column(String(255), default="", nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    locked_until: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_login_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    memberships: Mapped[List[TenantMembershipModel]] = relationship(
+        "TenantMembershipModel",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    refresh_tokens: Mapped[List[RefreshTokenModel]] = relationship(
+        "RefreshTokenModel",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+
+class TenantMembershipModel(Base):
+    """Association linking users to tenants with specific enterprise RBAC roles."""
+    __tablename__ = "tenant_memberships"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    role: Mapped[str] = mapped_column(String(50), default="VIEWER", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    tenant: Mapped[TenantModel] = relationship("TenantModel", back_populates="memberships")
+    user: Mapped[UserModel] = relationship("UserModel", back_populates="memberships")
+
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "user_id", name="uq_tenant_user_membership"),
+    )
+
+
+class RefreshTokenModel(Base):
+    """Cryptographically hashed server-side refresh tokens for session rotation and revocation."""
+    __tablename__ = "refresh_tokens"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    revoked_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    user: Mapped[UserModel] = relationship("UserModel", back_populates="refresh_tokens")
+
+
 class DocumentModel(Base):
-    """Primary document metadata record."""
+    """Primary document metadata record with strict tenant isolation."""
     __tablename__ = "documents"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id: Mapped[str] = mapped_column(String(36), default=DEFAULT_TENANT_ID, index=True, nullable=False)
     file_name: Mapped[str] = mapped_column(String(255), nullable=False)
     file_type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     file_hash: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
@@ -185,6 +309,7 @@ class ExtractedRecordModel(Base):
     __tablename__ = "extracted_records"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id: Mapped[str] = mapped_column(String(36), default=DEFAULT_TENANT_ID, index=True, nullable=False)
     document_id: Mapped[str] = mapped_column(
         String(36),
         ForeignKey("documents.id", ondelete="CASCADE"),
@@ -237,6 +362,7 @@ class ValidationResultModel(Base):
     __tablename__ = "validation_results"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id: Mapped[str] = mapped_column(String(36), default=DEFAULT_TENANT_ID, index=True, nullable=False)
     record_id: Mapped[str] = mapped_column(
         String(64),
         ForeignKey("extracted_records.record_id", ondelete="CASCADE"),
@@ -260,10 +386,11 @@ class ValidationResultModel(Base):
 
 
 class AuditLogModel(Base):
-    """Field-level reviewer correction history."""
+    """Field-level reviewer correction history with cryptographic hash chaining."""
     __tablename__ = "audit_logs"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id: Mapped[str] = mapped_column(String(36), default=DEFAULT_TENANT_ID, index=True, nullable=False)
     record_id: Mapped[str] = mapped_column(
         String(64),
         ForeignKey("extracted_records.record_id", ondelete="CASCADE"),
@@ -275,6 +402,8 @@ class AuditLogModel(Base):
     old_value: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     new_value: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    prev_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    record_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -290,6 +419,7 @@ class DocumentEmbeddingModel(Base):
     __tablename__ = "document_embeddings"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id: Mapped[str] = mapped_column(String(36), default=DEFAULT_TENANT_ID, index=True, nullable=False)
     document_id: Mapped[str] = mapped_column(
         String(36),
         ForeignKey("documents.id", ondelete="CASCADE"),
@@ -315,6 +445,7 @@ class ProcessingJobModel(Base):
     __tablename__ = "processing_jobs"
 
     job_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    tenant_id: Mapped[str] = mapped_column(String(36), default=DEFAULT_TENANT_ID, index=True, nullable=False)
     batch_id: Mapped[Optional[str]] = mapped_column(String(64), index=True, nullable=True)
     document_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
     file_name: Mapped[str] = mapped_column(String(255), nullable=False)

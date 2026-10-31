@@ -10,6 +10,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.api.schemas import AuditLogEntry, ManualCorrectionRequest, RecordDetailResponse
 from src.api.store import DocumentStore, get_global_store
+from src.auth.dependencies import UserContext, require_permission
+from src.auth.rbac import Permission
 from src.validation.engine import ValidationEngine
 from src.validation.schemas import ValidationSeverity
 
@@ -30,6 +32,7 @@ def get_store() -> DocumentStore:
 def get_record_detail(
     record_id: str,
     store: DocumentStore = Depends(get_store),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_READ)),
 ) -> RecordDetailResponse:
     """Fetch an individual extracted financial record with validation diagnostics and audit logs."""
     detail = store.get_record(record_id)
@@ -50,6 +53,7 @@ def correct_record(
     record_id: str,
     payload: ManualCorrectionRequest,
     store: DocumentStore = Depends(get_store),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_REVIEW)),
 ) -> RecordDetailResponse:
     """Apply manual reviewer overrides to an invoice record.
 
@@ -64,6 +68,12 @@ def correct_record(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Invoice record with ID '{record_id}' not found.",
         )
+
+    # Server-derived actor identity prevents reviewer spoofing (SEC-04)
+    if current_user.email and current_user.email != "system@enterprise.internal":
+        effective_actor = current_user.email
+    else:
+        effective_actor = payload.corrected_by or "system@enterprise.internal"
 
     current_record = detail.record
     audit_entries: List[AuditLogEntry] = []
@@ -91,7 +101,7 @@ def correct_record(
                     AuditLogEntry(
                         entry_id=str(uuid.uuid4()),
                         record_id=record_id,
-                        actor=payload.corrected_by,
+                        actor=effective_actor,
                         field_changed=field_name,
                         old_value=old_val,
                         new_value=new_val,
@@ -108,7 +118,7 @@ def correct_record(
                 AuditLogEntry(
                     entry_id=str(uuid.uuid4()),
                     record_id=record_id,
-                    actor=payload.corrected_by,
+                    actor=effective_actor,
                     field_changed="line_items",
                     old_value=f"{len(old_items)} line item(s)",
                     new_value=f"{len(payload.line_items)} line item(s)",
@@ -133,7 +143,7 @@ def correct_record(
             AuditLogEntry(
                 entry_id=str(uuid.uuid4()),
                 record_id=record_id,
-                actor=payload.corrected_by,
+                actor=effective_actor,
                 field_changed="status",
                 old_value=detail.validation.validation_status,
                 new_value="MANUALLY_VERIFIED",
@@ -159,3 +169,30 @@ def correct_record(
         )
 
     return saved_detail
+
+
+@router.get(
+    "/{record_id}/audit/verify",
+    summary="Cryptographically verify cryptographic hash chain integrity of reviewer audit trail",
+)
+def verify_record_audit_chain(
+    record_id: str,
+    store: DocumentStore = Depends(get_store),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_READ)),
+) -> dict:
+    """Validate unbroken SHA-256 hash chaining across all mutations to prove audit integrity."""
+    detail = store.get_record(record_id)
+    if not detail:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Invoice record with ID '{record_id}' not found.",
+        )
+
+    is_valid, reason = store.verify_audit_trail_integrity(record_id)
+    return {
+        "record_id": record_id,
+        "is_valid": is_valid,
+        "tamper_detected": not is_valid,
+        "details": reason or "Audit hash chain is cryptographically intact and unbroken.",
+        "verified_entries_count": len(detail.audit_trail),
+    }

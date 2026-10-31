@@ -168,7 +168,7 @@ class SpreadsheetProcessor:
 
     @staticmethod
     def clean_record_value(val: Any) -> Any:
-        """Ensure values are clean, JSON-serializable, and handle timestamps."""
+        """Ensure values are clean, JSON-serializable, handle timestamps, and neutralize formula injection."""
         if pd.isna(val):
             return None
         if isinstance(val, (datetime, pd.Timestamp)):
@@ -181,7 +181,12 @@ class SpreadsheetProcessor:
             return float(val) if not np.isnan(val) else None
         if isinstance(val, (np.bool_, bool)):
             return bool(val)
-        return str(val).strip()
+        
+        s_val = str(val).strip()
+        # Neutralize CSV Formula / DDE Execution Injection (CWE-1236)
+        if s_val and s_val[0] in ("=", "+", "-", "@", "\t", "\r"):
+            return f"'{s_val}"
+        return s_val
 
     @staticmethod
     def build_markdown_preview(df: pd.DataFrame, max_rows: int = 15) -> str:

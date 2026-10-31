@@ -20,11 +20,15 @@ from src.api.schemas import (
     SearchResponse,
 )
 from src.api.store import DocumentStore, get_global_store
+from src.auth.dependencies import UserContext, require_permission
+from src.auth.rbac import Permission
 from src.validation.engine import ValidationEngine
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/documents", tags=["documents"])
+
+MAX_UPLOAD_SIZE = 50 * 1024 * 1024  # 50 MB per file threshold
 
 
 def get_store() -> DocumentStore:
@@ -48,6 +52,7 @@ async def upload_documents(
     x_idempotency_key: Optional[str] = Header(None, alias="X-Idempotency-Key", description="Optional client idempotency key"),
     store: DocumentStore = Depends(get_store),
     queue: BaseJobQueue = Depends(get_queue),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_CREATE)),
 ) -> BatchUploadResponse:
     """Accept multi-file upload batches, immediately return 202 Accepted, and enqueue background jobs."""
     if not files:
@@ -62,8 +67,13 @@ async def upload_documents(
         unique_file_id = f"{uuid.uuid4()}{file_ext}"
         destination_path = store.upload_dir / unique_file_id
 
-        # Write uploaded bytes to disk
+        # Write uploaded bytes to disk with strict size ceiling (SEC-05)
         content = await file_obj.read()
+        if len(content) > MAX_UPLOAD_SIZE:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail=f"Uploaded file '{file_name}' exceeds maximum allowed size of 50 MB.",
+            )
         destination_path.write_bytes(content)
 
         job_id = str(uuid.uuid4())
@@ -86,6 +96,7 @@ async def upload_documents(
             "provider_override": provider_override,
             "original_filename": file_name,
             "idempotency_key": x_idempotency_key,
+            "tenant_id": current_user.tenant_id,
         }
 
         # Save job in store and enqueue
@@ -121,6 +132,7 @@ async def upload_documents(
 def get_document_results(
     document_id: str,
     store: DocumentStore = Depends(get_store),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_READ)),
 ) -> DocumentResultsResponse:
     """Fetch complete document intelligence payload including ingestion, extraction, and validation."""
     results = store.get_document_results(document_id)
@@ -153,6 +165,7 @@ def search_documents_get(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
     store: DocumentStore = Depends(get_store),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_READ)),
 ) -> SearchResponse:
     """Search and filter extracted invoice records using URL query parameters."""
     params = SearchQueryParams(
@@ -182,6 +195,7 @@ def search_documents_get(
 def search_documents_post(
     params: SearchQueryParams,
     store: DocumentStore = Depends(get_store),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_READ)),
 ) -> SearchResponse:
     """Search and filter extracted invoice records using JSON request body."""
     return store.search_records(params)
@@ -194,6 +208,7 @@ def search_documents_post(
 def cross_verify_documents(
     payload: CrossVerifyRequest,
     store: DocumentStore = Depends(get_store),
+    current_user: UserContext = Depends(require_permission(Permission.DOCUMENT_READ)),
 ):
     """Execute on-demand cross-verification between invoice records and a reference document."""
     ref_doc = store.get_document_results(payload.reference_document_id)
