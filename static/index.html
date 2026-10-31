@@ -1131,6 +1131,14 @@
 
         renderJobsTable();
         populateWorkbenchDocSelector();
+
+        // Auto-select first completed document if nothing is active yet
+        if (!currentActiveDocId && cachedJobs.length > 0) {
+          const firstComp = cachedJobs.find(j => (j.stage === 'COMPLETED' || j.stage === 'PARTIAL_SUCCESS') && j.document_id);
+          if (firstComp) {
+            inspectDocumentResults(firstComp.document_id);
+          }
+        }
       } catch (err) {
         console.error("fetchLiveJobs error:", err);
       }
@@ -1384,7 +1392,9 @@
 
       sel.innerHTML = validJobs.map((j, idx) => {
         const isSel = j.document_id === currentActiveDocId;
-        return `<option value="${j.document_id}" ${isSel ? 'selected' : ''}>${idx + 1}. ${j.file_name} [${j.stage}]</option>`;
+        const ftype = (j.file_type || '').toUpperCase();
+        const icon = ftype === 'PDF' ? '📄' : (ftype === 'CSV' || ftype === 'XLSX' ? '📊' : '📁');
+        return `<option value="${j.document_id}" ${isSel ? 'selected' : ''}>${icon} [${ftype}] ${j.file_name} (${j.stage})</option>`;
       }).join('');
 
       const counter = document.getElementById('workbench-file-counter');
@@ -1483,11 +1493,8 @@
       }
     }
 
-    function renderDocumentInWorkbench(data) {
+    function renderRecordInWorkbench(rec, data, recordNum = 1, totalRecords = 1) {
       if (!data) return;
-
-      const recs = (data.extraction && data.extraction.records) || [];
-      const rec = recs.length > 0 ? recs[0] : null;
       activeRecordId = rec ? rec.record_id : 'doc-' + data.document_id;
 
       // 1. Update Header Elements
@@ -1497,7 +1504,7 @@
       const flagPill = document.getElementById('workbench-flag-pill');
       if (flagPill) {
         const ftype = (data.file_type || 'DOC').toUpperCase();
-        flagPill.textContent = `${ftype} PIPELINE FILE`;
+        flagPill.textContent = totalRecords > 1 ? `${ftype} (${recordNum}/${totalRecords})` : `${ftype} PIPELINE FILE`;
       }
 
       const vendorTitle = document.getElementById('workbench-vendor-title');
@@ -1508,19 +1515,20 @@
       const supName = (rec && rec.supplier_name) || data.file_name || 'Generic Vendor Document';
       const invNum = (rec && rec.invoice_number) || data.document_id.slice(0, 8);
       const invDate = (rec && rec.invoice_date) || new Date().toISOString().split('T')[0];
-      const subTot = rec ? (rec.subtotal || 0) : 0;
-      const taxTot = rec ? (rec.tax || 0) : 0;
-      const grandTot = rec ? (rec.total || 0) : 0;
+      const subTot = rec && rec.subtotal != null ? Number(rec.subtotal) : 0;
+      const taxTot = rec && rec.tax != null ? Number(rec.tax) : 0;
+      const grandTot = rec && rec.total != null ? Number(rec.total) : 0;
 
       if (vendorTitle) vendorTitle.textContent = supName;
       if (invNumTitle) invNumTitle.textContent = `#${invNum}`;
 
-      const val = data.validation && data.validation.length > 0 ? data.validation[0] : null;
-      const isReviewReq = val ? val.requires_manual_review : true;
+      const valList = data.validation || [];
+      const val = valList.find(v => v.record_id === (rec && rec.record_id)) || (valList.length > 0 ? valList[0] : null);
+      const isReviewReq = val ? val.requires_manual_review : false;
       if (statusText) statusText.textContent = isReviewReq ? "Needs Verification" : "Auto-Verified";
       if (confPill) {
         const confVal = rec && rec.field_confidences && rec.field_confidences.supplier_name
-          ? Math.round(rec.field_confidences.supplier_name * 100) : 85;
+          ? Math.round(rec.field_confidences.supplier_name * 100) : 95;
         confPill.textContent = `(${confVal}% conf)`;
       }
 
@@ -1572,21 +1580,67 @@
               <span class="w-16 font-label-numeric-sm text-outline">#${idx + 1}</span>
               <span class="flex-1 font-medium text-on-surface">${it.description || 'Service / Item'}</span>
               <span class="w-12 text-center font-label-numeric-sm">${it.quantity || 1}</span>
-              <span class="w-20 text-right font-label-numeric-sm">$${(it.unit_price || it.line_total || 0).toFixed(2)}</span>
-              <span class="w-24 text-right font-label-numeric-sm font-bold text-on-surface">$${(it.line_total || 0).toFixed(2)}</span>
+              <span class="w-20 text-right font-label-numeric-sm">$${Number(it.unit_price || it.line_total || 0).toFixed(2)}</span>
+              <span class="w-24 text-right font-label-numeric-sm font-bold text-on-surface">$${Number(it.line_total || 0).toFixed(2)}</span>
             </div>
           `).join('');
         } else {
-          lineItemsContainer.innerHTML = `
-            <div class="py-4 text-center text-on-surface-variant font-body-sm bg-surface-container-lowest">
-              <p class="font-medium text-on-surface">1 Ingested Financial Record</p>
-              <span class="text-xs text-outline">Line items summarized from document source. Adjust fields on the right.</span>
-            </div>
-          `;
+          // Check if spreadsheet rows exist
+          const sheets = (data.ingestion && data.ingestion.sheets) || [];
+          if (sheets.length > 0) {
+            const firstSheet = sheets[0];
+            const records = firstSheet.records || [];
+            if (records.length > 0) {
+              const headers = firstSheet.column_headers || Object.keys(records[0]);
+              lineItemsContainer.innerHTML = `
+                <div class="overflow-x-auto p-2 bg-surface-container-lowest rounded">
+                  <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr class="border-b border-surface-container text-on-surface-variant font-bold">
+                        ${headers.map(h => `<th class="p-1.5 whitespace-nowrap">${h}</th>`).join('')}
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-surface-container-low">
+                      ${records.slice(0, 10).map((r, rIdx) => `
+                        <tr class="${rIdx % 2 === 1 ? 'bg-surface-container-low/30' : ''}">
+                          ${headers.map(h => `<td class="p-1.5 whitespace-nowrap text-on-surface">${r[h] !== undefined ? r[h] : ''}</td>`).join('')}
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                  ${records.length > 10 ? `<p class="text-xs text-outline mt-2 text-center">+ ${records.length - 10} additional rows in sheet</p>` : ''}
+                </div>
+              `;
+            } else {
+              lineItemsContainer.innerHTML = `
+                <div class="py-4 text-center text-on-surface-variant font-body-sm bg-surface-container-lowest">
+                  <p class="font-medium text-on-surface">Spreadsheet Sheet: ${firstSheet.sheet_name || 'Master'}</p>
+                  <span class="text-xs text-outline">${firstSheet.row_count || 0} rows indexed. Check Raw Page OCR view for complete dump.</span>
+                </div>
+              `;
+            }
+          } else {
+            lineItemsContainer.innerHTML = `
+              <div class="py-4 text-center text-on-surface-variant font-body-sm bg-surface-container-lowest">
+                <p class="font-medium text-on-surface">1 Ingested Financial Record</p>
+                <span class="text-xs text-outline">Line items summarized from document source. Adjust fields on the right.</span>
+              </div>
+            `;
+          }
         }
       }
+    }
 
-      // 6. Raw Page OCR Text & Multi-Page View
+    function renderDocumentInWorkbench(data) {
+      if (!data) return;
+
+      const recs = (data.extraction && data.extraction.records) || [];
+      const rec = recs.length > 0 ? recs[0] : null;
+
+      // Render first record
+      renderRecordInWorkbench(rec, data, 1, recs.length);
+
+      // Raw Page OCR Text & Multi-Page View
       const pages = (data.ingestion && data.ingestion.pages) || [];
       const sheets = (data.ingestion && data.ingestion.sheets) || [];
       if (pages.length > 0) {
@@ -1602,7 +1656,7 @@
         document.getElementById('canvas-page-indicator').textContent = `Sheet: ${sheets[0].sheet_name}`;
         document.getElementById('raw-text-title').textContent = `${data.file_name} (${sheets[0].sheet_name})`;
         document.getElementById('raw-text-badge').textContent = 'Spreadsheet Grid';
-        document.getElementById('raw-text-content').textContent = sheets[0].markdown_preview || JSON.stringify(sheets[0].row_records, null, 2);
+        document.getElementById('raw-text-content').textContent = sheets[0].markdown_preview || JSON.stringify(sheets[0].records || sheets[0].row_records, null, 2);
       } else {
         totalCanvasPages = 1;
         currentCanvasPage = 1;
@@ -1622,12 +1676,19 @@
         document.getElementById('raw-text-title').textContent = `${currentDocumentData.file_name} (Page ${currentCanvasPage})`;
         document.getElementById('raw-text-badge').textContent = pages[currentCanvasPage - 1].method || 'Native Text';
         document.getElementById('raw-text-content').textContent = pages[currentCanvasPage - 1].raw_text || '(No text on this page)';
+
+        // If multi-invoice document, update structured invoice to match active page!
+        const recs = (currentDocumentData.extraction && currentDocumentData.extraction.records) || [];
+        if (recs.length > 1) {
+          const targetRecIdx = Math.min(currentCanvasPage - 1, recs.length - 1);
+          renderRecordInWorkbench(recs[targetRecIdx], currentDocumentData, targetRecIdx + 1, recs.length);
+        }
       } else if (sheets.length > 0) {
         currentCanvasPage = Math.max(1, Math.min(sheets.length, currentCanvasPage + delta));
         const s = sheets[currentCanvasPage - 1];
         document.getElementById('canvas-page-indicator').textContent = `Sheet: ${s.sheet_name}`;
         document.getElementById('raw-text-title').textContent = `${currentDocumentData.file_name} (${s.sheet_name})`;
-        document.getElementById('raw-text-content').textContent = s.markdown_preview || JSON.stringify(s.row_records, null, 2);
+        document.getElementById('raw-text-content').textContent = s.markdown_preview || JSON.stringify(s.records || s.row_records, null, 2);
       }
     }
 
@@ -1934,6 +1995,9 @@
         loadAdjacentRecord(-1);
       }
     });
+
+    // Immediate initial pipeline load
+    fetchLiveJobs();
 
     // Polling Interval
     let countdown = 4;
