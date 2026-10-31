@@ -161,13 +161,13 @@ The system includes a single-page web application served directly from `/` (via 
 
 ## Running the Automated Test Suite & Code Coverage
 
-Run all 41 unit and integration tests across Tasks 1, 2, 3, 4, 5, and 7 with code coverage:
+Run all 59 unit and integration tests across Tasks 1 through 7 and Phase 1 distributed components with code coverage:
 
 ```bash
 pytest --cov=src --cov-report=term-missing -v
 ```
 
-All 41 tests execute completely offline without requiring live external services, Redis daemons, or live API keys.
+All 59 unit and integration tests execute completely offline without requiring live external services, using simulated fixtures or against production Redis/PostgreSQL containers. Complete Phase 1 audit and verification reports are preserved in reports/phase1/.
 
 ---
 

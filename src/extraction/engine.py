@@ -373,6 +373,10 @@ class AIExtractionEngine:
         if env_provider in ("gemini", "openai", "ollama", "heuristic_fallback"):
             self.config.provider = ExtractionProvider(env_provider)
 
+        env_model = os.getenv("GEMINI_MODEL", "").strip()
+        if env_model:
+            self.config.model_name = env_model
+
         self._gemini_client = None
         if self.config.provider == ExtractionProvider.GEMINI:
             gemini_key = os.getenv("GEMINI_API_KEY")
@@ -380,19 +384,20 @@ class AIExtractionEngine:
                 try:
                     from google import genai
                     self._gemini_client = genai.Client(api_key=gemini_key)
-                    logger.info("Initialized Google Gemini client for structured invoice extraction.")
+                    logger.info(f"Initialized Google Gemini client with model '{self.config.model_name}'.")
                 except Exception as exc:
-                    logger.warning(f"Could not initialize google-genai client: {exc}. Using heuristic fallback.")
-                    self.config.provider = ExtractionProvider.HEURISTIC_FALLBACK
+                    logger.warning(f"Could not initialize google-genai client: {exc}. Will use heuristic fallback.")
             else:
-                logger.info("No GEMINI_API_KEY detected in environment; using heuristic fallback.")
-                self.config.provider = ExtractionProvider.HEURISTIC_FALLBACK
+                logger.info("No GEMINI_API_KEY detected in environment; fallback will be used.")
 
     async def _extract_segment_with_gemini(
         self,
         segment: InvoiceSegment,
-    ) -> InvoiceExtractionRecord:
-        """Invoke Gemini with Structured Outputs and temperature=0.0."""
+    ) -> Tuple[InvoiceExtractionRecord, bool]:
+        """Invoke Gemini with Structured Outputs and temperature=0.0.
+
+        Returns (record, fallback_invoked).
+        """
         from google.genai import types
 
         user_prompt = DOCUMENT_SEGMENT_USER_PROMPT.format(
@@ -403,43 +408,60 @@ class AIExtractionEngine:
         )
 
         try:
-            # Execute Gemini call in threadpool to keep async loop non-blocking
+            # Execute Gemini call in threadpool with a 30s timeout
             loop = asyncio.get_running_loop()
-            response = await loop.run_in_executor(
-                None,
-                lambda: self._gemini_client.models.generate_content(
-                    model=self.config.model_name,
-                    contents=user_prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=SYSTEM_EXTRACTION_PROMPT,
-                        response_mime_type="application/json",
-                        response_schema=InvoiceExtractionRecord,
-                        temperature=self.config.temperature,
+            response = await asyncio.wait_for(
+                loop.run_in_executor(
+                    None,
+                    lambda: self._gemini_client.models.generate_content(
+                        model=self.config.model_name,
+                        contents=user_prompt,
+                        config=types.GenerateContentConfig(
+                            system_instruction=SYSTEM_EXTRACTION_PROMPT,
+                            response_mime_type="application/json",
+                            response_schema=InvoiceExtractionRecord,
+                            temperature=self.config.temperature,
+                        ),
                     ),
                 ),
+                timeout=30.0,
             )
 
             rec_dict = json.loads(response.text)
             rec_dict["record_id"] = str(uuid.uuid4())
             rec_dict["source_document_id"] = segment.document_id
             rec_dict["page_range_or_sheet"] = segment.source_reference
-            return InvoiceExtractionRecord(**rec_dict)
+            return InvoiceExtractionRecord(**rec_dict), False
 
         except Exception as exc:
             logger.warning(f"Gemini API extraction failed: {exc}. Falling back to heuristic extractor.")
-            return HeuristicExtractor.extract_from_segment(segment, self.config)
+            rec = HeuristicExtractor.extract_from_segment(segment, self.config)
+            rec.extraction_warnings.append(f"AI Provider fallback invoked: {str(exc)}")
+            return rec, True
 
     async def _extract_segment_async(
         self,
         segment: InvoiceSegment,
         semaphore: asyncio.Semaphore,
-    ) -> InvoiceExtractionRecord:
-        """Extract an individual segment protected by an async semaphore."""
+    ) -> Tuple[InvoiceExtractionRecord, str, bool]:
+        """Extract an individual segment protected by an async semaphore.
+
+        Returns (verified_record, actual_provider, fallback_invoked).
+        """
         async with semaphore:
+            actual_provider = self.config.provider.value
+            fallback_invoked = False
+
             if self.config.provider == ExtractionProvider.GEMINI and self._gemini_client:
-                record = await self._extract_segment_with_gemini(segment)
+                record, fallback_invoked = await self._extract_segment_with_gemini(segment)
+                if fallback_invoked:
+                    actual_provider = ExtractionProvider.HEURISTIC_FALLBACK.value
             else:
                 record = HeuristicExtractor.extract_from_segment(segment, self.config)
+                if self.config.provider == ExtractionProvider.GEMINI:
+                    fallback_invoked = True
+                    actual_provider = ExtractionProvider.HEURISTIC_FALLBACK.value
+                    record.extraction_warnings.append("Gemini requested but client unavailable; heuristic fallback invoked.")
 
             # Apply Anti-Hallucination Grounding Guard
             verified_record = self.grounding_verifier.verify_and_harden_record(
@@ -448,7 +470,7 @@ class AIExtractionEngine:
                 ocr_confidence=segment.min_ocr_confidence,
                 ocr_warnings=segment.warnings,
             )
-            return verified_record
+            return verified_record, actual_provider, fallback_invoked
 
     async def extract_document_async(
         self,
@@ -458,6 +480,8 @@ class AIExtractionEngine:
         t0 = time.perf_counter()
         records: List[InvoiceExtractionRecord] = []
         semaphore = asyncio.Semaphore(self.config.max_concurrency)
+        any_fallback = False
+        providers_used: set[str] = set()
 
         # Branch 1: Spreadsheets / Tabular Documents
         if doc_result.sheets:
@@ -472,6 +496,7 @@ class AIExtractionEngine:
                         source_text=sheet.markdown_preview,
                     )
                     records.append(v_rec)
+            providers_used.add("spreadsheet_mapper")
 
         # Branch 2: Multi-Page Documents (PDFs, Images, Scans)
         elif doc_result.pages:
@@ -480,19 +505,37 @@ class AIExtractionEngine:
                 pages=doc_result.pages,
             )
             tasks = [self._extract_segment_async(seg, semaphore) for seg in segments]
-            records = await asyncio.gather(*tasks)
+            extracted_tuples = await asyncio.gather(*tasks)
+
+            for rec, p_used, f_invoked in extracted_tuples:
+                records.append(rec)
+                providers_used.add(p_used)
+                if f_invoked:
+                    any_fallback = True
 
         elapsed_ms = (time.perf_counter() - t0) * 1000.0
+
+        # Accurate model provenance
+        if ExtractionProvider.GEMINI.value in providers_used and not any_fallback:
+            model_used = f"gemini:{self.config.model_name}"
+        elif any_fallback:
+            model_used = f"heuristic_fallback (fallback from {self.config.provider.value})"
+        elif "spreadsheet_mapper" in providers_used:
+            model_used = "spreadsheet_mapper:deterministic_v4.3"
+        else:
+            model_used = f"{self.config.provider.value}:deterministic_v4.3"
 
         return DocumentExtractionResponse(
             document_id=doc_result.document_id,
             file_name=doc_result.file_name,
             total_invoices_detected=len(records),
             records=list(records),
-            model_used=f"{self.config.provider.value}:{self.config.model_name}",
+            model_used=model_used,
             processing_time_ms=round(elapsed_ms, 2),
             telemetry={
-                "provider": self.config.provider.value,
+                "requested_provider": self.config.provider.value,
+                "actual_providers": list(providers_used),
+                "fallback_invoked": any_fallback,
                 "concurrency": self.config.max_concurrency,
                 "verified_grounding": self.config.enable_grounding_verification,
             },

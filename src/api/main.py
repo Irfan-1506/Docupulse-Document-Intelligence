@@ -35,8 +35,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Initializing Document Intelligence API...")
     store = get_global_store()
     queue = get_job_queue(store)
-    await queue.start()
-    logger.info("Background job queue started and ready.")
+    try:
+        await queue.start()
+        logger.info("Background job queue started and ready.")
+    except Exception as e:
+        logger.error(f"Background job queue failed to initialize: {e}. API running in degraded mode.")
 
     # Auto-seed golden dataset if database is empty or has minimal documents
     try:

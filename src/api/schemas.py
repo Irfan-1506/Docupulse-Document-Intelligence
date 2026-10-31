@@ -14,12 +14,14 @@ from src.validation.schemas import BatchValidationReport, CrossVerificationMatch
 
 class JobStage(str, Enum):
     """Lifecycle stages for document background processing."""
+    PENDING = "PENDING"
     QUEUED = "QUEUED"
     INGESTING = "INGESTING"
     OCR_PROCESSING = "OCR_PROCESSING"
     AI_EXTRACTING = "AI_EXTRACTING"
     VALIDATING = "VALIDATING"
     CROSS_VERIFYING = "CROSS_VERIFYING"
+    RETRYING = "RETRYING"
     COMPLETED = "COMPLETED"
     PARTIAL_SUCCESS = "PARTIAL_SUCCESS"
     FAILED = "FAILED"
@@ -43,6 +45,9 @@ class JobStatusResponse(BaseModel):
     processing_time_ms: Optional[float] = Field(default=None, description="Elapsed wall-clock latency in ms.")
     error_message: Optional[str] = Field(default=None, description="Diagnostic error details if stage is FAILED.")
     retry_count: int = Field(default=0, ge=0, description="Number of times this job has been retried.")
+    attempt: int = Field(default=1, ge=1, description="Current processing attempt.")
+    max_attempts: int = Field(default=3, ge=1, description="Maximum allowed attempts before dead-lettering.")
+    idempotency_key: Optional[str] = Field(default=None, description="Idempotency key to prevent duplicate processing.")
 
 
 class BatchStatusResponse(BaseModel):

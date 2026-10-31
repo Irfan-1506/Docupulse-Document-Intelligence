@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import logging
+import os
+import signal
+import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from src.api.schemas import JobStage, JobStatusResponse
-from src.api.store import DocumentStore
+from src.api.store import DocumentStore, get_global_store
+from src.core.logging import ErrorCategory, get_structured_logger, sanitize_sensitive_data
 from src.extraction.engine import AIExtractionEngine
 from src.extraction.schemas import ExtractionConfig, ExtractionProvider
 from src.ingestion.router import DocumentIngestionEngine
@@ -36,7 +41,13 @@ async def process_document_job(
       - 100%: COMPLETED / PARTIAL_SUCCESS / FAILED
     """
     t_start = time.perf_counter()
-    logger.info(f"Starting processing for Job ID {job_id} on file {file_path.name}")
+    ctx_logger = get_structured_logger(
+        "src.api.worker",
+        job_id=job_id,
+        worker_id=options.get("worker_id"),
+        attempt=options.get("attempt", 1),
+    )
+    ctx_logger.info(f"Starting processing for Job ID {job_id} on file {file_path.name}")
 
     try:
         # =====================================================================
@@ -180,6 +191,7 @@ async def process_document_job(
             progress_percent=100,
             pages_processed=total_pages,
             total_pages=total_pages,
+            document_id=ingestion_res.document_id,
             processing_time_ms=round(elapsed_ms, 2),
         )
 
@@ -191,8 +203,9 @@ async def process_document_job(
 
     except Exception as exc:
         elapsed_ms = (time.perf_counter() - t_start) * 1000.0
-        err = f"Unhandled pipeline worker error: {str(exc)}"
-        logger.exception(f"Job ID {job_id} failed: {err}")
+        sanitized_err = sanitize_sensitive_data(str(exc))
+        err = f"[{ErrorCategory.WORKER_ERROR.value}] Unhandled pipeline worker error: {sanitized_err}"
+        ctx_logger.exception(f"Job ID {job_id} failed: {err}")
         updated = store.update_job_stage(
             job_id=job_id,
             stage=JobStage.FAILED,
@@ -201,3 +214,160 @@ async def process_document_job(
             processing_time_ms=round(elapsed_ms, 2),
         )
         return updated or store.get_job(job_id)  # type: ignore
+
+
+# ===========================================================================
+# Standalone Worker Daemon Service (Objective B)
+# ===========================================================================
+
+class WorkerDaemon:
+    """Production standalone background worker process.
+
+    Continuously consumes document tasks from the configured queue (RedisJobQueue
+    or AsyncWorkerQueue), executes pipeline stages, reports telemetry, and handles
+    signals for graceful zero-data-loss shutdown.
+    """
+
+    def __init__(
+        self,
+        store: Optional[DocumentStore] = None,
+        redis_url: Optional[str] = None,
+        concurrency: int = 4,
+        worker_id: Optional[str] = None,
+        queue: Optional[Any] = None,
+    ) -> None:
+        self.store = store or get_global_store()
+        self.concurrency = max(1, concurrency)
+        self.worker_id = worker_id or f"worker-{os.getpid()}-{int(time.time() * 1000) % 100000}"
+        self.redis_url = redis_url or os.getenv("REDIS_URL")
+        self._running = False
+        self._shutdown_event = asyncio.Event()
+
+        # Import here to avoid circular dependencies
+        from src.api.queue import AsyncWorkerQueue, BaseJobQueue, RedisJobQueue
+
+        if queue is not None:
+            self.queue: BaseJobQueue = queue
+            logger.info("WorkerDaemon initialized with injected queue instance.")
+        elif self.redis_url and "redis://" in self.redis_url:
+            self.queue = RedisJobQueue(
+                store=self.store,
+                redis_url=self.redis_url,
+                concurrency=self.concurrency,
+                worker_id=self.worker_id,
+            )
+            logger.info(f"WorkerDaemon initialized with RedisJobQueue ({self.redis_url}).")
+        else:
+            self.queue = AsyncWorkerQueue(
+                store=self.store,
+                concurrency=self.concurrency,
+            )
+            logger.info("WorkerDaemon initialized with AsyncWorkerQueue (local mode).")
+
+    async def start(self) -> None:
+        """Start queue consumers without blocking (useful for embedded or test harnesses)."""
+        self._running = True
+        await self.queue.start()
+
+    async def stop(self) -> None:
+        """Stop queue consumers and wait for drainage."""
+        self.trigger_shutdown()
+        await self.queue.stop()
+
+    async def run(self) -> None:
+        """Start worker consumers and block until shutdown signal received."""
+        self._running = True
+        logger.info(
+            f"=== [DocuPulse AP Worker] Starting Worker Daemon ===\n"
+            f"Worker ID:    {self.worker_id}\n"
+            f"Concurrency:  {self.concurrency}\n"
+            f"Queue Engine: {self.queue.__class__.__name__}"
+        )
+
+        # Start queue consumers
+        await self.queue.start()
+
+        # Wait for shutdown signal
+        try:
+            await self._shutdown_event.wait()
+        except asyncio.CancelledError:
+            pass
+        finally:
+            logger.info(f"[DocuPulse AP Worker] Shutting down worker {self.worker_id}...")
+            await self.queue.stop()
+            logger.info(f"[DocuPulse AP Worker] Worker {self.worker_id} cleanly stopped.")
+
+    def trigger_shutdown(self) -> None:
+        """Signal the worker to gracefully complete in-flight tasks and exit."""
+        logger.info(f"[DocuPulse AP Worker] Received shutdown signal for {self.worker_id}.")
+        self._running = False
+        self._shutdown_event.set()
+
+
+async def run_worker_cli(args: argparse.Namespace) -> None:
+    """Async entrypoint for standalone worker command."""
+    # Configure logging
+    log_level = getattr(logging, args.log_level.upper(), logging.INFO)
+    logging.basicConfig(
+        level=log_level,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
+
+    daemon = WorkerDaemon(
+        redis_url=args.redis_url,
+        concurrency=args.concurrency,
+        worker_id=args.worker_id,
+    )
+
+    # Register OS signal handlers for graceful shutdown
+    loop = asyncio.get_running_loop()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        try:
+            loop.add_signal_handler(sig, daemon.trigger_shutdown)
+        except NotImplementedError:
+            # Signal handlers not implemented on Windows event loop for signal.add_signal_handler
+            # Handled via KeyboardInterrupt in main
+            pass
+
+    try:
+        await daemon.run()
+    except (KeyboardInterrupt, SystemExit):
+        daemon.trigger_shutdown()
+
+
+def main() -> None:
+    """CLI entrypoint for running: python -m src.api.worker"""
+    parser = argparse.ArgumentParser(description="DocuPulse Enterprise AP Background Worker Daemon")
+    parser.add_argument(
+        "--redis-url",
+        default=os.getenv("REDIS_URL"),
+        help="Redis connection URL (e.g. redis://localhost:6379/0)",
+    )
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        default=int(os.getenv("QUEUE_CONCURRENCY", "4")),
+        help="Number of concurrent document processing consumers (default: 4)",
+    )
+    parser.add_argument(
+        "--worker-id",
+        default=os.getenv("WORKER_ID"),
+        help="Unique worker identifier",
+    )
+    parser.add_argument(
+        "--log-level",
+        default=os.getenv("LOG_LEVEL", "INFO"),
+        help="Logging level: DEBUG, INFO, WARNING, ERROR",
+    )
+
+    args = parser.parse_args()
+
+    try:
+        asyncio.run(run_worker_cli(args))
+    except KeyboardInterrupt:
+        print("\n[DocuPulse AP Worker] Stopped by user (SIGINT).")
+        sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

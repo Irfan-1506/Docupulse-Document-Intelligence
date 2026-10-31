@@ -400,6 +400,19 @@ class SQLAlchemyRepository:
 
                 # 5. Persist Extracted Records
                 if extraction and extraction.records:
+                    # Clean up prior records and validations for this document to ensure idempotency on retries
+                    prior_records = await session.execute(
+                        select(ExtractedRecordModel.record_id).where(ExtractedRecordModel.document_id == document_id)
+                    )
+                    prior_rids = prior_records.scalars().all()
+                    if prior_rids:
+                        await session.execute(
+                            delete(ValidationResultModel).where(ValidationResultModel.record_id.in_(prior_rids))
+                        )
+                        await session.execute(
+                            delete(ExtractedRecordModel).where(ExtractedRecordModel.document_id == document_id)
+                        )
+
                     for rec in extraction.records:
                         r_stmt = select(ExtractedRecordModel).where(ExtractedRecordModel.record_id == rec.record_id)
                         r_res = await session.execute(r_stmt)

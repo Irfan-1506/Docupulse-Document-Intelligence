@@ -68,6 +68,8 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-docupulse}:${POSTGRES_PASSWORD:-docupulse_secret}@postgres:5432/${POSTGRES_DB:-docupulse_db}
       REDIS_URL: redis://redis:6379/0
+      USE_REDIS_QUEUE: "true"
+      QUEUE_CONCURRENCY: ${QUEUE_CONCURRENCY:-4}
       RUN_MIGRATIONS: "true"
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
@@ -105,6 +107,8 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-docupulse}:${POSTGRES_PASSWORD:-docupulse_secret}@postgres:5432/${POSTGRES_DB:-docupulse_db}
       REDIS_URL: redis://redis:6379/0
+      USE_REDIS_QUEUE: "true"
+      QUEUE_CONCURRENCY: ${QUEUE_CONCURRENCY:-4}
       RUN_MIGRATIONS: "false"
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}

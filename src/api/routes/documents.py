@@ -7,9 +7,9 @@ import uuid
 from pathlib import Path
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Query, UploadFile, status
 
-from src.api.queue import BaseJobQueue, get_job_queue
+from src.api.queue import BaseJobQueue, QueueUnavailableError, get_job_queue
 from src.api.schemas import (
     BatchUploadResponse,
     CrossVerifyRequest,
@@ -45,6 +45,7 @@ async def upload_documents(
     files: List[UploadFile] = File(..., description="One or more financial files (PDF, JPG, PNG, TIFF, XLSX, XLS, CSV)"),
     force_ocr: bool = Form(False, description="Force OCR rasterization on all pages"),
     provider_override: Optional[str] = Form(None, description="Optional LLM provider override"),
+    x_idempotency_key: Optional[str] = Header(None, alias="X-Idempotency-Key", description="Optional client idempotency key"),
     store: DocumentStore = Depends(get_store),
     queue: BaseJobQueue = Depends(get_queue),
 ) -> BatchUploadResponse:
@@ -77,17 +78,31 @@ async def upload_documents(
             progress_percent=0,
             pages_processed=0,
             total_pages=0,
+            idempotency_key=x_idempotency_key,
         )
 
         options = {
             "force_ocr": force_ocr,
             "provider_override": provider_override,
             "original_filename": file_name,
+            "idempotency_key": x_idempotency_key,
         }
 
         # Save job in store and enqueue
         store.save_job(job=job, file_path=destination_path, options=options)
-        await queue.enqueue(job_id=job_id, file_path=destination_path, options=options)
+        try:
+            await queue.enqueue(
+                job_id=job_id,
+                file_path=destination_path,
+                options=options,
+                idempotency_key=x_idempotency_key,
+            )
+        except QueueUnavailableError as exc:
+            logger.error(f"Queue service unavailable for job {job_id}: {exc}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Queue backend is unavailable: {exc}",
+            )
         queued_jobs.append(job)
 
     return BatchUploadResponse(

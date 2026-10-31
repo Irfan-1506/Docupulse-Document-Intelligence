@@ -40,10 +40,15 @@ fi
 # Run Database Migrations if requested
 if [ "$RUN_MIGRATIONS" = "true" ] || [ "$1" = "uvicorn" ]; then
     echo "[Entrypoint] Executing database schema migrations (alembic upgrade head)..."
-    alembic upgrade head || {
-        echo "[Entrypoint] WARNING: Alembic migration reported an issue; falling back to init_db()."
-        python -c "import asyncio; from src.db.session import init_db; asyncio.run(init_db())"
-    }
+    if ! alembic upgrade head; then
+        if [ "$APP_ENV" = "production" ]; then
+            echo "[Entrypoint] ERROR: Production database migration failed! Aborting container startup." >&2
+            exit 1
+        else
+            echo "[Entrypoint] WARNING: Development fallback initializing via init_db()..."
+            python -c "import asyncio; from src.db.session import init_db; asyncio.run(init_db())"
+        fi
+    fi
     echo "[Entrypoint] Database schema verified."
 fi
 
