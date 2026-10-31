@@ -80,7 +80,7 @@ class DocumentModel(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     file_name: Mapped[str] = mapped_column(String(255), nullable=False)
     file_type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
-    file_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    file_hash: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
     file_size_bytes: Mapped[Optional[int]] = mapped_column(BigInteger, nullable=True)
     storage_path: Mapped[Optional[str]] = mapped_column(String(1024), nullable=True)
     total_pages_or_sheets: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

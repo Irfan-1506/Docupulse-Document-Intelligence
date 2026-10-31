@@ -149,17 +149,69 @@ class CrossVerificationEngine:
                     "target": float(row_sub),
                     "delta": round(delta, 2),
                 }
+            else:
+                field_deltas["subtotal"] = {
+                    "source": float(pdf_sub),
+                    "target": float(row_sub),
+                    "delta": 0.0,
+                }
 
-        # 3. Currency comparison
+        # 3. Tax comparison
+        pdf_tax = to_decimal(pdf_record.tax)
+        row_tax = to_decimal(matched_row.get("tax"))
+        if pdf_tax is not None and row_tax is not None:
+            delta = float(pdf_tax - row_tax)
+            field_deltas["tax"] = {
+                "source": float(pdf_tax),
+                "target": float(row_tax),
+                "delta": round(delta, 2) if abs(delta) > self.tolerance else 0.0,
+            }
+
+        # 4. Supplier comparison
+        row_supplier = str(matched_row.get("supplier_name", "")).strip()
+        if pdf_record.supplier_name and row_supplier:
+            supp_match = fuzz.token_sort_ratio(pdf_vendor_norm, normalize_entity_name(row_supplier)) >= (self.config.fuzzy_supplier_threshold * 100)
+            field_deltas["supplier_name"] = {
+                "source": pdf_record.supplier_name,
+                "target": row_supplier,
+                "delta": 0.0 if supp_match else "MISMATCH",
+            }
+            if not supp_match:
+                has_variance = True
+                variance_details.append(f"Supplier mismatch: PDF='{pdf_record.supplier_name}' vs Ledger='{row_supplier}'")
+
+        # 5. Invoice Number comparison
+        row_inv = str(matched_row.get("invoice_number", "")).strip()
+        if pdf_record.invoice_number and row_inv:
+            inv_match = normalize_invoice_number(pdf_record.invoice_number) == normalize_invoice_number(row_inv)
+            field_deltas["invoice_number"] = {
+                "source": pdf_record.invoice_number,
+                "target": row_inv,
+                "delta": 0.0 if inv_match else "MISMATCH",
+            }
+
+        # 6. Invoice Date comparison
+        row_date = str(matched_row.get("invoice_date", "")).strip()
+        if pdf_record.invoice_date and row_date:
+            date_match = str(pdf_record.invoice_date).split("T")[0] == row_date.split("T")[0]
+            field_deltas["invoice_date"] = {
+                "source": str(pdf_record.invoice_date),
+                "target": row_date,
+                "delta": 0.0 if date_match else "MISMATCH",
+            }
+
+        # 7. Currency comparison
         row_curr = str(matched_row.get("currency", "")).strip().upper()
-        if pdf_record.currency and row_curr and pdf_record.currency.upper() != row_curr:
-            has_variance = True
-            variance_details.append(f"Currency mismatch: PDF={pdf_record.currency} vs Ledger={row_curr}")
+        if pdf_record.currency and row_curr:
+            curr_match = pdf_record.currency.upper() == row_curr
             field_deltas["currency"] = {
                 "source": pdf_record.currency,
                 "target": row_curr,
-                "delta": "MISMATCH",
+                "delta": 0.0 if curr_match else "MISMATCH",
             }
+            if not curr_match:
+                has_variance = True
+                variance_details.append(f"Currency mismatch: PDF={pdf_record.currency} vs Ledger={row_curr}")
 
         if has_variance:
             match = CrossVerificationMatch(

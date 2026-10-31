@@ -189,11 +189,17 @@ def cross_verify_documents(
         )
 
     # Collect source records from invoice documents
+    target_ids = [d for d in (payload.invoice_document_ids or []) if d and d != "all"]
     source_records = []
-    for doc_id in payload.invoice_document_ids:
-        doc = store.get_document_results(doc_id)
-        if doc and doc.extraction and doc.extraction.records:
-            source_records.extend(doc.extraction.records)
+    if target_ids:
+        for doc_id in target_ids:
+            doc = store.get_document_results(doc_id)
+            if doc and doc.extraction and doc.extraction.records:
+                source_records.extend(doc.extraction.records)
+    else:
+        # Pull all records across store excluding reference document itself
+        all_recs = store.get_all_records()
+        source_records = [r for r in all_recs if r.source_document_id != payload.reference_document_id]
 
     if not source_records:
         raise HTTPException(
@@ -208,7 +214,26 @@ def cross_verify_documents(
     ref_pdfs = None
 
     if ref_doc.ingestion and ref_doc.ingestion.sheets:
-        ref_ledger = ref_doc.ingestion.sheets[0]
+        from src.extraction.chunker import SpreadsheetInvoiceMapper
+        combined_rows = []
+        for sheet in ref_doc.ingestion.sheets:
+            if not sheet.records:
+                continue
+            role_map = SpreadsheetInvoiceMapper.match_column_roles(sheet.column_headers)
+            for idx, r in enumerate(sheet.records):
+                row_dict = {"row_id": f"{sheet.sheet_name or 'Sheet'}_Row_{idx+1}"}
+                for k, v in r.items():
+                    role = role_map.get(k)
+                    if role:
+                        row_dict[role] = v
+                    else:
+                        clean_k = str(k).strip().lower().replace(" ", "_")
+                        row_dict[clean_k] = v
+                combined_rows.append(row_dict)
+        if combined_rows:
+            ref_ledger = combined_rows
+        elif ref_doc.ingestion.sheets:
+            ref_ledger = ref_doc.ingestion.sheets[0]
     elif ref_doc.extraction and ref_doc.extraction.records:
         ref_pdfs = ref_doc.extraction.records
 
@@ -218,6 +243,21 @@ def cross_verify_documents(
         reference_pdfs=ref_pdfs,
     )
 
+    rec_map = {r.record_id: r for r in source_records}
+    enriched_results = []
+    for r in report.results:
+        dumped = r.model_dump() if hasattr(r, "model_dump") else dict(r)
+        src_rec = rec_map.get(r.record_id)
+        if src_rec:
+            dumped["extracted_record"] = src_rec.model_dump() if hasattr(src_rec, "model_dump") else src_rec
+            dumped["supplier_name"] = src_rec.supplier_name
+            dumped["total"] = float(src_rec.total) if src_rec.total is not None else None
+            dumped["subtotal"] = float(src_rec.subtotal) if src_rec.subtotal is not None else None
+            dumped["tax"] = float(src_rec.tax) if src_rec.tax is not None else None
+            dumped["invoice_date"] = str(src_rec.invoice_date) if src_rec.invoice_date is not None else None
+            dumped["currency"] = src_rec.currency
+        enriched_results.append(dumped)
+
     return {
         "reference_document_id": payload.reference_document_id,
         "total_evaluated": report.total_records_evaluated,
@@ -225,5 +265,5 @@ def cross_verify_documents(
         "manual_review_count": report.manual_review_count,
         "cross_verified_exact_matches": report.cross_verified_exact_matches,
         "cross_verified_variances": report.cross_verified_variances,
-        "results": [r.model_dump() if hasattr(r, "model_dump") else r for r in report.results],
+        "results": enriched_results,
     }

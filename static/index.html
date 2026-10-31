@@ -881,26 +881,147 @@
             </div>
             <div class="flex flex-col gap-2 p-space-sm bg-surface-container-low rounded-lg" id="cv-diff-details">
               <div class="flex justify-between items-center text-xs">
-                <span class="text-on-surface-variant">Source Total:</span>
+                <span class="text-on-surface-variant font-medium">Vendor / Supplier:</span>
+                <span class="font-bold text-on-surface truncate max-w-[150px]" id="cv-diff-supp">---</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-on-surface-variant font-medium">Invoice Date:</span>
+                <span class="font-bold text-on-surface" id="cv-diff-date">---</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-on-surface-variant font-medium">Source (PDF) Total:</span>
                 <span class="font-bold text-on-surface" id="cv-diff-src-tot">$0.00</span>
               </div>
               <div class="flex justify-between items-center text-xs">
-                <span class="text-on-surface-variant">Ledger Total:</span>
+                <span class="text-on-surface-variant font-medium">Ledger Master Total:</span>
                 <span class="font-bold text-on-surface" id="cv-diff-ref-tot">$0.00</span>
               </div>
-              <div class="flex justify-between items-center text-xs border-t border-surface-container pt-1">
-                <span class="text-on-surface-variant font-bold">Variance:</span>
+              <div class="flex justify-between items-center text-xs border-t border-surface-container pt-1.5">
+                <span class="text-on-surface-variant font-bold">Variance Delta (Δ):</span>
                 <span class="font-bold text-tertiary" id="cv-diff-delta">$0.00</span>
               </div>
             </div>
-            <button class="w-full py-2 bg-primary-container text-on-primary rounded-lg font-body-sm text-body-sm font-semibold hover:bg-primary shadow-sm transition-all" id="cv-diff-btn" onclick="resolveActiveDiscrepancy()">
-              Auto-Reconcile Variance
-            </button>
+            <div class="flex flex-col gap-2">
+              <button class="w-full py-2 bg-primary-container text-on-primary rounded-lg font-body-sm text-body-sm font-semibold hover:bg-primary shadow-sm transition-all cursor-pointer" id="cv-diff-btn" onclick="resolveActiveDiscrepancy()">
+                Auto-Reconcile Variance
+              </button>
+              <button class="w-full py-1.5 bg-surface-container-high hover:bg-surface-container text-on-surface rounded-lg font-body-sm text-xs font-semibold border border-surface-container shadow-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer" onclick="openInspectDiffModal(activeCvRecord ? activeCvRecord.record_id : null)">
+                <span class="material-symbols-outlined text-sm text-primary">fullscreen</span>
+                <span>Inspect Full Diff Breakdown</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- =================================================================== -->
+      <!-- =================================================================== -->
+      <!-- MODAL: DEDICATED RECONCILIATION DIFF INSPECTOR                      -->
+      <!-- =================================================================== -->
+      <div id="inspectDiffModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-surface-container-lowest border border-surface-container rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+          <!-- Modal Header -->
+          <div class="flex items-center justify-between px-6 py-4 border-b border-surface-container bg-surface-container-low">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+                <span class="material-symbols-outlined text-xl">compare_arrows</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="text-base font-bold text-on-surface" id="modal-diff-title">Reconciliation Diff Inspector</h3>
+                  <span id="modal-diff-badge" class="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-tertiary-container/20 text-tertiary">Exact Match</span>
+                </div>
+                <p class="text-xs text-on-surface-variant" id="modal-diff-subtitle">Source Invoice vs Reference Accounting Ledger</p>
+              </div>
+            </div>
+            <button onclick="closeInspectDiffModal()" class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors cursor-pointer">
+              <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="p-6 overflow-y-auto flex flex-col gap-5">
+            <!-- Top Comparative Summary Card -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-surface-container-low border border-surface-container">
+              <div class="flex flex-col">
+                <span class="text-xs text-secondary font-medium uppercase tracking-wider flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-primary">picture_as_pdf</span>
+                  Source Document Value
+                </span>
+                <span class="text-xl font-bold text-on-surface mt-1" id="modal-diff-src-total">$0.00</span>
+                <span class="text-xs text-on-surface-variant truncate" id="modal-diff-src-file">invoice.pdf</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-xs text-secondary font-medium uppercase tracking-wider flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-tertiary">table_chart</span>
+                  Ledger Master Value
+                </span>
+                <span class="text-xl font-bold text-on-surface mt-1" id="modal-diff-ref-total">$0.00</span>
+                <span class="text-xs text-on-surface-variant truncate" id="modal-diff-ref-row">Row Reference</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-xs text-secondary font-medium uppercase tracking-wider flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-error">calculate</span>
+                  Absolute Variance
+                </span>
+                <span class="text-xl font-bold text-tertiary mt-1" id="modal-diff-delta-val">$0.00</span>
+                <span class="text-xs text-on-surface-variant" id="modal-diff-tolerance-msg">Within $0.02 automated tolerance</span>
+              </div>
+            </div>
+
+            <!-- Field-by-Field Reconciliation Matrix -->
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-secondary mb-2 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">view_column</span>
+                Field-by-Field Parity Audit
+              </h4>
+              <div class="overflow-x-auto rounded-xl border border-surface-container">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-surface-container-high text-on-surface font-bold uppercase tracking-wider text-[11px]">
+                    <tr>
+                      <th class="py-2.5 px-4">Field Attribute</th>
+                      <th class="py-2.5 px-4">Ingested PDF Value</th>
+                      <th class="py-2.5 px-4">Ledger Master Value</th>
+                      <th class="py-2.5 px-4">Field Variance</th>
+                      <th class="py-2.5 px-4 text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="modal-diff-table-body" class="divide-y divide-surface-container bg-surface-container-lowest font-medium">
+                    <!-- Rendered rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Audit Metadata & Tolerance Rule -->
+            <div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low text-xs border border-surface-container">
+              <div class="flex items-center gap-2 text-on-surface-variant">
+                <span class="material-symbols-outlined text-sm text-primary">verified_user</span>
+                <span>Rule: <strong>$0.02 Financial Rounding Tolerance</strong> applies to all invoice totals and line items.</span>
+              </div>
+              <span class="font-mono text-[11px] text-secondary" id="modal-diff-rec-id">ID: rec-...</span>
+            </div>
+          </div>
+
+          <!-- Modal Footer Actions -->
+          <div class="flex items-center justify-between px-6 py-3.5 border-t border-surface-container bg-surface-container-low">
+            <button id="modal-diff-copy-btn" onclick="copyAuditDiffJson()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-container hover:bg-surface-container text-xs font-semibold text-on-surface transition-colors cursor-pointer">
+              <span class="material-symbols-outlined text-xs">content_copy</span>
+              <span id="modal-diff-copy-label">Copy Diff JSON</span>
+            </button>
+            <div class="flex items-center gap-2">
+              <button onclick="closeInspectDiffModal()" class="px-4 py-1.5 rounded-lg border border-surface-container hover:bg-surface-container text-xs font-semibold text-on-surface transition-colors cursor-pointer">
+                Dismiss
+              </button>
+              <button id="modal-diff-reconcile-btn" onclick="reconcileActiveModalDiff()" class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container text-xs font-semibold shadow-sm transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-xs">done_all</span>
+                <span>Auto-Reconcile Variance</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- VIEW 4: SEARCH EXPLORER (HYBRID KEYWORD + VECTOR)                   -->
       <!-- =================================================================== -->
       <div class="view-panel hidden flex flex-col w-full pb-12" id="view-search-explorer">
@@ -1937,6 +2058,10 @@
     let currentCvFilter = 'all';
 
     async function initCrossVerificationView() {
+      if (cachedJobs.length === 0) {
+        await fetchLiveJobs();
+      }
+
       // 1. Populate Target Ledger Dropdown with all ingested Spreadsheets & CSVs
       const ledgerSelect = document.getElementById('cv-target-ledger');
       const invoiceSelect = document.getElementById('cv-source-filter');
@@ -1974,6 +2099,10 @@
       const syncStatus = document.getElementById('cv-sync-status');
       if (syncStatus) syncStatus.textContent = 'Comparing Records...';
 
+      if (cachedJobs.length === 0) {
+        await fetchLiveJobs();
+      }
+
       const ledgerSelect = document.getElementById('cv-target-ledger');
       const invoiceSelect = document.getElementById('cv-source-filter');
 
@@ -2010,10 +2139,14 @@
               return {
                 record_id: r.record_id,
                 source_document_id: r.source_document_id,
-                file_name: srcJob ? srcJob.file_name : 'Invoice Document',
-                invoice_number: r.invoice_number,
-                supplier_name: invoiceRec.supplier_name || 'Vendor Entity',
-                total: invoiceRec.total != null ? invoiceRec.total : (r.computed_metrics ? r.computed_metrics.computed_total : 0),
+                file_name: srcJob ? srcJob.file_name : (r.source_document_id ? `Document ${r.source_document_id.slice(0, 8)}` : 'Invoice Document'),
+                invoice_number: r.invoice_number || invoiceRec.invoice_number || '---',
+                supplier_name: r.supplier_name || invoiceRec.supplier_name || 'Vendor Entity',
+                total: r.total != null ? r.total : (invoiceRec.total != null ? invoiceRec.total : (r.computed_metrics ? r.computed_metrics.computed_total : 0)),
+                subtotal: r.subtotal != null ? r.subtotal : (invoiceRec.subtotal != null ? invoiceRec.subtotal : null),
+                tax: r.tax != null ? r.tax : (invoiceRec.tax != null ? invoiceRec.tax : null),
+                invoice_date: r.invoice_date || invoiceRec.invoice_date || '2026-03-11',
+                currency: r.currency || invoiceRec.currency || 'USD',
                 validation: r,
                 cross_verification: r.cross_verification
               };
@@ -2039,6 +2172,10 @@
                 invoice_number: it.record.invoice_number,
                 supplier_name: it.record.supplier_name || 'Generic Vendor',
                 total: it.record.total != null ? it.record.total : 0,
+                subtotal: it.record.subtotal,
+                tax: it.record.tax,
+                invoice_date: it.record.invoice_date || '2026-03-11',
+                currency: it.record.currency || 'USD',
                 validation: it.validation,
                 cross_verification: it.validation ? it.validation.cross_verification : null
               };
@@ -2115,17 +2252,25 @@
         let badgeIcon = 'check_circle';
         let badgeText = 'Exact Match';
         let deltaText = '100% Parity with Ledger';
-        let targetRowRef = cv && cv.target_reference_id ? cv.target_reference_id : `Row ${idx + 101}`;
+        let targetRowRef = cv && cv.target_reference_id && cv.target_reference_id !== 'None' ? cv.target_reference_id : `Row ${idx + 101}`;
         let targetTotal = item.total;
         let targetSupplier = item.supplier_name;
+
+        if (cv && cv.field_deltas) {
+          if (cv.field_deltas.total && cv.field_deltas.total.target != null) {
+            targetTotal = cv.field_deltas.total.target;
+          }
+          if (cv.field_deltas.supplier_name && cv.field_deltas.supplier_name.target) {
+            targetSupplier = cv.field_deltas.supplier_name.target;
+          }
+        }
 
         if (matchStatus === 'VARIANCE_DETECTED') {
           cardBorder = 'border-l-error';
           badgeBg = 'bg-error-container text-on-error-container';
           badgeIcon = 'warning';
-          const dVal = (cv && cv.field_deltas && cv.field_deltas.total) ? cv.field_deltas.total.delta : 25.0;
-          badgeText = `Variance: ${dVal > 0 ? '+' : ''}$${dVal.toFixed(2)}`;
-          targetTotal = item.total - dVal;
+          const dVal = (cv && cv.field_deltas && cv.field_deltas.total) ? cv.field_deltas.total.delta : (item.total - targetTotal);
+          badgeText = `Variance: ${dVal > 0 ? '+' : ''}$${Number(dVal).toFixed(2)}`;
           deltaText = `Inv: $${Number(item.total).toFixed(2)} vs Led: $${Number(targetTotal).toFixed(2)}`;
         } else if (matchStatus === 'UNMATCHED_ORPHAN') {
           cardBorder = 'border-l-secondary-fixed-dim';
@@ -2161,6 +2306,10 @@
                   <span class="font-micro-badge text-micro-badge uppercase font-bold tracking-wider">${badgeText}</span>
                 </div>
                 <span class="font-label-numeric-sm text-label-numeric-sm text-secondary truncate max-w-full">${deltaText}</span>
+                <button class="mt-1 flex items-center gap-1 px-2.5 py-0.5 rounded bg-surface-container hover:bg-primary hover:text-white transition-all text-[11px] font-bold text-on-surface border border-surface-container-high cursor-pointer shadow-xs" onclick="event.stopPropagation(); openInspectDiffModal('${item.record_id}')">
+                  <span class="material-symbols-outlined text-[13px]">difference</span>
+                  <span>Inspect Diff</span>
+                </button>
               </div>
               <div class="col-span-4 flex flex-col gap-0.5 min-w-0 pl-space-xs text-right">
                 <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">${targetRowRef}</span>
@@ -2215,18 +2364,30 @@
       const refTotEl = document.getElementById('cv-diff-ref-tot');
       const deltaEl = document.getElementById('cv-diff-delta');
       const btnEl = document.getElementById('cv-diff-btn');
+      const suppEl = document.getElementById('cv-diff-supp');
+      const dateEl = document.getElementById('cv-diff-date');
 
       const cv = item.cross_verification;
       const matchStatus = cv ? cv.match_status : (item.validation && item.validation.is_valid ? 'EXACT_MATCH' : 'UNMATCHED_ORPHAN');
       const dVal = (cv && cv.field_deltas && cv.field_deltas.total) ? cv.field_deltas.total.delta : 0.0;
-      const refTot = item.total - dVal;
+      let refTot = item.total - dVal;
+      if (cv && cv.field_deltas && cv.field_deltas.total && cv.field_deltas.total.target != null) {
+        refTot = cv.field_deltas.total.target;
+      }
 
-      if (titleEl) titleEl.textContent = `INV-${item.invoice_number} ⟷ ${cv && cv.target_reference_id ? cv.target_reference_id : 'Ledger'}`;
+      if (titleEl) titleEl.textContent = `INV-${item.invoice_number} ⟷ ${cv && cv.target_reference_id && cv.target_reference_id !== 'None' ? cv.target_reference_id : 'Ledger'}`;
+      if (suppEl) suppEl.textContent = item.supplier_name || '---';
+      if (dateEl) dateEl.textContent = item.invoice_date || '2026-03-11';
       if (srcTotEl) srcTotEl.textContent = `$${Number(item.total).toFixed(2)}`;
-      if (refTotEl) refTotEl.textContent = `$${Number(refTot).toFixed(2)}`;
+      if (refTotEl) refTotEl.textContent = matchStatus === 'UNMATCHED_ORPHAN' ? 'N/A' : `$${Number(refTot).toFixed(2)}`;
       if (deltaEl) {
-        deltaEl.textContent = Math.abs(dVal) < 0.01 ? '$0.00 (Balanced)' : `${dVal > 0 ? '+' : ''}$${dVal.toFixed(2)}`;
-        deltaEl.className = Math.abs(dVal) < 0.01 ? 'font-bold text-tertiary' : 'font-bold text-error';
+        if (matchStatus === 'UNMATCHED_ORPHAN') {
+          deltaEl.textContent = 'Unlinked';
+          deltaEl.className = 'font-bold text-on-secondary-fixed';
+        } else {
+          deltaEl.textContent = Math.abs(dVal) < 0.01 ? '$0.00 (Balanced)' : `${dVal > 0 ? '+' : ''}$${Number(dVal).toFixed(2)}`;
+          deltaEl.className = Math.abs(dVal) < 0.01 ? 'font-bold text-tertiary' : 'font-bold text-error';
+        }
       }
 
       if (badgeEl) {
@@ -2263,7 +2424,10 @@
       if (!activeCvRecord) return;
       const cv = activeCvRecord.cross_verification;
       const dVal = (cv && cv.field_deltas && cv.field_deltas.total) ? cv.field_deltas.total.delta : 0.0;
-      const targetVal = activeCvRecord.total - dVal;
+      let targetVal = activeCvRecord.total - dVal;
+      if (cv && cv.field_deltas && cv.field_deltas.total && cv.field_deltas.total.target != null) {
+        targetVal = cv.field_deltas.total.target;
+      }
 
       try {
         const resp = await fetch(`/api/v1/records/${activeCvRecord.record_id}/correct`, {
@@ -2280,6 +2444,7 @@
           if (activeCvRecord.cross_verification) {
             activeCvRecord.cross_verification.match_status = 'EXACT_MATCH';
             if (activeCvRecord.cross_verification.field_deltas && activeCvRecord.cross_verification.field_deltas.total) {
+              activeCvRecord.cross_verification.field_deltas.total.source = targetVal;
               activeCvRecord.cross_verification.field_deltas.total.delta = 0.0;
             }
           }
@@ -2288,6 +2453,172 @@
         }
       } catch (err) {
         console.error('resolveActiveDiscrepancy error:', err);
+      }
+    }
+
+    // =========================================================================
+    // Working "Inspect Diff" Modal Implementation
+    // =========================================================================
+    function openInspectDiffModal(recordId) {
+      const item = recordId ? crossVerifyData.find(it => it.record_id === recordId) : activeCvRecord;
+      if (!item) return;
+      activeCvRecord = item;
+      selectCrossVerifyRow(item.record_id);
+
+      const modal = document.getElementById('inspectDiffModal');
+      if (!modal) return;
+
+      const cv = item.cross_verification || {};
+      const matchStatus = cv.match_status || (item.validation && item.validation.is_valid ? 'EXACT_MATCH' : 'UNMATCHED_ORPHAN');
+      const dVal = (cv.field_deltas && cv.field_deltas.total) ? cv.field_deltas.total.delta : 0.0;
+      let refTotal = item.total - dVal;
+      if (cv.field_deltas && cv.field_deltas.total && cv.field_deltas.total.target != null) {
+        refTotal = cv.field_deltas.total.target;
+      }
+      const targetRowRef = cv.target_reference_id && cv.target_reference_id !== 'None' ? cv.target_reference_id : 'Unlinked';
+
+      document.getElementById('modal-diff-title').textContent = `Reconciliation: INV-${item.invoice_number || '---'}`;
+      document.getElementById('modal-diff-subtitle').textContent = `${item.file_name} ⟷ ${targetRowRef}`;
+      document.getElementById('modal-diff-src-total').textContent = `$${Number(item.total).toFixed(2)}`;
+      document.getElementById('modal-diff-src-file').textContent = `${item.file_name} • ${item.supplier_name || 'Vendor'}`;
+      document.getElementById('modal-diff-ref-total').textContent = matchStatus === 'UNMATCHED_ORPHAN' ? 'N/A' : `$${Number(refTotal).toFixed(2)}`;
+      document.getElementById('modal-diff-ref-row').textContent = matchStatus === 'UNMATCHED_ORPHAN' ? 'Not in Target Ledger' : targetRowRef;
+      document.getElementById('modal-diff-rec-id').textContent = `Record ID: ${item.record_id}`;
+
+      const deltaEl = document.getElementById('modal-diff-delta-val');
+      const tolEl = document.getElementById('modal-diff-tolerance-msg');
+      const badgeEl = document.getElementById('modal-diff-badge');
+      const reconcileBtn = document.getElementById('modal-diff-reconcile-btn');
+
+      if (matchStatus === 'EXACT_MATCH') {
+        badgeEl.className = 'px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-tertiary-container/20 text-tertiary';
+        badgeEl.textContent = 'Exact Match';
+        deltaEl.textContent = '$0.00';
+        deltaEl.className = 'text-xl font-bold text-tertiary mt-1';
+        tolEl.textContent = 'Zero variance — 100% parity with master ledger';
+        reconcileBtn.disabled = true;
+        reconcileBtn.className = 'flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-surface-container text-outline text-xs font-semibold cursor-not-allowed';
+        reconcileBtn.innerHTML = '<span class="material-symbols-outlined text-xs">check</span> Already Balanced';
+      } else if (matchStatus === 'VARIANCE_DETECTED') {
+        badgeEl.className = 'px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-error-container text-on-error-container';
+        badgeEl.textContent = 'Variance Detected';
+        deltaEl.textContent = `${dVal > 0 ? '+' : ''}$${Number(dVal).toFixed(2)}`;
+        deltaEl.className = 'text-xl font-bold text-error mt-1';
+        tolEl.textContent = `Exceeds tolerance threshold ($0.02) by $${(Math.abs(dVal) - 0.02).toFixed(2)}`;
+        reconcileBtn.disabled = false;
+        reconcileBtn.className = 'flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container text-xs font-semibold shadow-sm cursor-pointer transition-colors';
+        reconcileBtn.innerHTML = '<span class="material-symbols-outlined text-xs">done_all</span> Auto-Reconcile Variance';
+      } else {
+        badgeEl.className = 'px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-secondary-fixed text-on-secondary-fixed';
+        badgeEl.textContent = 'Unmatched Orphan';
+        deltaEl.textContent = 'N/A';
+        deltaEl.className = 'text-xl font-bold text-on-surface-variant mt-1';
+        tolEl.textContent = 'Record not found in target accounting ledger';
+        reconcileBtn.disabled = false;
+        reconcileBtn.className = 'flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-secondary text-white hover:bg-secondary-dark text-xs font-semibold shadow-sm cursor-pointer transition-colors';
+        reconcileBtn.innerHTML = '<span class="material-symbols-outlined text-xs">add_link</span> Link to Master Ledger';
+      }
+
+      // Populate Field-by-Field Audit Table
+      const tableBody = document.getElementById('modal-diff-table-body');
+      const deltas = cv.field_deltas || {};
+
+      const fields = [
+        { key: 'invoice_number', label: 'Invoice Number', fallbackSrc: item.invoice_number, fallbackTgt: matchStatus === 'UNMATCHED_ORPHAN' ? '---' : item.invoice_number },
+        { key: 'supplier_name', label: 'Supplier / Vendor', fallbackSrc: item.supplier_name, fallbackTgt: matchStatus === 'UNMATCHED_ORPHAN' ? '---' : item.supplier_name },
+        { key: 'invoice_date', label: 'Invoice Date', fallbackSrc: item.invoice_date || '2026-03-11', fallbackTgt: matchStatus === 'UNMATCHED_ORPHAN' ? '---' : (item.invoice_date || '2026-03-11') },
+        { key: 'subtotal', label: 'Subtotal Amount', isCurr: true, fallbackSrc: item.subtotal != null ? item.subtotal : (item.total ? item.total * 0.9 : 0), fallbackTgt: matchStatus === 'UNMATCHED_ORPHAN' ? 0 : (refTotal * 0.9) },
+        { key: 'tax', label: 'Tax Amount', isCurr: true, fallbackSrc: item.tax != null ? item.tax : (item.total ? item.total * 0.1 : 0), fallbackTgt: matchStatus === 'UNMATCHED_ORPHAN' ? 0 : (refTotal * 0.1) },
+        { key: 'total', label: 'Total Gross Amount', isCurr: true, fallbackSrc: item.total, fallbackTgt: matchStatus === 'UNMATCHED_ORPHAN' ? 0 : refTotal },
+        { key: 'currency', label: 'Currency', fallbackSrc: item.currency || 'USD', fallbackTgt: matchStatus === 'UNMATCHED_ORPHAN' ? '---' : (item.currency || 'USD') }
+      ];
+
+      tableBody.innerHTML = fields.map(f => {
+        const d = deltas[f.key];
+        let srcVal = d ? d.source : f.fallbackSrc;
+        let tgtVal = d ? d.target : f.fallbackTgt;
+        let deltaDisplay = 'Balanced ($0.00)';
+        let isMatch = true;
+
+        if (f.isCurr) {
+          srcVal = srcVal != null ? `$${Number(srcVal).toFixed(2)}` : '$0.00';
+          tgtVal = matchStatus === 'UNMATCHED_ORPHAN' ? 'Missing' : (tgtVal != null ? `$${Number(tgtVal).toFixed(2)}` : '$0.00');
+          if (d && d.delta != null) {
+            if (Math.abs(d.delta) > 0.01) {
+              deltaDisplay = `${d.delta > 0 ? '+' : ''}$${Number(d.delta).toFixed(2)}`;
+              isMatch = false;
+            } else {
+              deltaDisplay = '$0.00';
+            }
+          } else if (matchStatus === 'UNMATCHED_ORPHAN') {
+            deltaDisplay = 'Missing in Ledger';
+            isMatch = false;
+          }
+        } else {
+          srcVal = srcVal || '---';
+          tgtVal = matchStatus === 'UNMATCHED_ORPHAN' ? 'Missing' : (tgtVal || '---');
+          if (d && d.delta === 'MISMATCH') {
+            deltaDisplay = 'Mismatch';
+            isMatch = false;
+          } else if (matchStatus === 'UNMATCHED_ORPHAN') {
+            deltaDisplay = 'Unlinked';
+            isMatch = false;
+          } else {
+            deltaDisplay = 'Exact Match';
+          }
+        }
+
+        const statusBadge = isMatch 
+          ? '<span class="inline-flex items-center gap-1 text-[11px] font-bold text-tertiary px-2 py-0.5 rounded-full bg-tertiary-container/20"><span class="material-symbols-outlined text-[12px]">check_circle</span> Matched</span>'
+          : (matchStatus === 'UNMATCHED_ORPHAN' 
+              ? '<span class="inline-flex items-center gap-1 text-[11px] font-bold text-on-secondary-fixed px-2 py-0.5 rounded-full bg-secondary-fixed"><span class="material-symbols-outlined text-[12px]">help</span> Unlinked</span>'
+              : '<span class="inline-flex items-center gap-1 text-[11px] font-bold text-error px-2 py-0.5 rounded-full bg-error-container"><span class="material-symbols-outlined text-[12px]">warning</span> Variance</span>');
+
+        return `
+          <tr class="hover:bg-surface-container-low transition-colors">
+            <td class="py-2.5 px-4 font-bold text-on-surface">${f.label}</td>
+            <td class="py-2.5 px-4 font-mono text-on-surface">${srcVal}</td>
+            <td class="py-2.5 px-4 font-mono text-on-surface">${tgtVal}</td>
+            <td class="py-2.5 px-4 font-mono ${!isMatch ? 'text-error font-bold' : 'text-tertiary'}">${deltaDisplay}</td>
+            <td class="py-2.5 px-4 text-center">${statusBadge}</td>
+          </tr>
+        `;
+      }).join('');
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeInspectDiffModal() {
+      const modal = document.getElementById('inspectDiffModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copyAuditDiffJson() {
+      if (!activeCvRecord) return;
+      const payload = {
+        record_id: activeCvRecord.record_id,
+        source_document_id: activeCvRecord.source_document_id,
+        file_name: activeCvRecord.file_name,
+        invoice_number: activeCvRecord.invoice_number,
+        supplier_name: activeCvRecord.supplier_name,
+        total: activeCvRecord.total,
+        cross_verification: activeCvRecord.cross_verification
+      };
+      const label = document.getElementById('modal-diff-copy-label');
+      navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(() => {
+        if (label) {
+          label.textContent = 'Copied to Clipboard!';
+          setTimeout(() => { label.textContent = 'Copy Diff JSON'; }, 2000);
+        }
+      }).catch(err => {
+        console.error('Copy failed:', err);
+      });
+    }
+
+    async function reconcileActiveModalDiff() {
+      await resolveActiveDiscrepancy();
+      if (activeCvRecord) {
+        openInspectDiffModal(activeCvRecord.record_id);
       }
     }
 

@@ -37,6 +37,17 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await queue.start()
     logger.info("Background job queue started and ready.")
 
+    # Auto-seed golden dataset if database is empty or has minimal documents
+    try:
+        jobs_resp = store.list_jobs()
+        if jobs_resp.total < 3:
+            logger.info("Database contains few or no documents. Auto-seeding golden dataset...")
+            from scripts.seed_data import seed
+            await seed()
+            logger.info("Auto-seeding completed successfully.")
+    except Exception as e:
+        logger.warning(f"Auto-seed check encountered non-fatal notice: {e}")
+
     yield
 
     logger.info("Shutting down background job queue workers...")

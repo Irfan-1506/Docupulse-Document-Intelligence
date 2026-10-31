@@ -10,7 +10,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy import delete, func, select, update
+from sqlalchemy import delete, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from src.api.schemas import (
@@ -308,11 +308,6 @@ class SQLAlchemyRepository:
         """Atomically persist complete document intelligence outputs across normalized tables."""
         async with self.session_factory() as session:
             async with session.begin():
-                # 1. Upsert DocumentModel
-                stmt = select(DocumentModel).where(DocumentModel.id == document_id)
-                res = await session.execute(stmt)
-                doc_model = res.scalar_one_or_none()
-
                 full_text = ingestion.full_merged_text if ingestion else ""
                 file_hash = ingestion.file_hash if ingestion else f"hash_{document_id}"
                 status_str = ingestion.status.value if ingestion else "SUCCESS"
@@ -320,7 +315,18 @@ class SQLAlchemyRepository:
                 err = ingestion.error_details if ingestion else None
                 proc_time = ingestion.processing_time_ms if ingestion else None
 
+                # 1. Upsert DocumentModel
+                stmt = select(DocumentModel).where(DocumentModel.id == document_id)
+                res = await session.execute(stmt)
+                doc_model = res.scalar_one_or_none()
+
+                if not doc_model and file_hash:
+                    stmt_h = select(DocumentModel).where(DocumentModel.file_hash == file_hash)
+                    res_h = await session.execute(stmt_h)
+                    doc_model = res_h.scalar_one_or_none()
+
                 if doc_model:
+                    document_id = doc_model.id
                     doc_model.file_name = file_name
                     doc_model.file_type = file_type
                     doc_model.file_hash = file_hash
