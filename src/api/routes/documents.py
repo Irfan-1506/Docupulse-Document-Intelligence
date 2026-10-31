@@ -220,8 +220,10 @@ def cross_verify_documents(
 
     return {
         "reference_document_id": payload.reference_document_id,
-        "matched_records": report.total_records,
-        "cross_verification_exact_matches": report.cross_verification_exact_matches,
-        "cross_verification_variance_matches": report.cross_verification_variance_matches,
-        "results": report.records,
+        "total_evaluated": report.total_records_evaluated,
+        "auto_verified_count": report.auto_verified_count,
+        "manual_review_count": report.manual_review_count,
+        "cross_verified_exact_matches": report.cross_verified_exact_matches,
+        "cross_verified_variances": report.cross_verified_variances,
+        "results": [r.model_dump() if hasattr(r, "model_dump") else r for r in report.results],
     }
