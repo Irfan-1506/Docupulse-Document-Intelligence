@@ -118,13 +118,13 @@ Start the FastAPI application with Uvicorn:
 uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-- **DocuPulse Enterprise AP v4.2 Web Dashboard:** Open `http://localhost:8000/` in any browser.
+- **DocuPulse Enterprise AP v4.3 Web Dashboard:** Open `http://localhost:8000/` in any browser.
 - **Interactive Swagger Documentation:** Open `http://localhost:8000/docs`.
 - **OpenAPI 3.1 JSON Specification:** Open `http://localhost:8000/openapi.json`.
 
 ---
 
-## Web Dashboard: DocuPulse Enterprise AP v4.2
+## Web Dashboard: DocuPulse Enterprise AP v4.3
 
 The system includes a single-page web application served directly from `/` (via `static/index.html`), implementing all 5 enterprise operational screens:
 
@@ -214,7 +214,7 @@ python scripts/export_report_pdf.py
 ```
 
 The compiled PDF is saved to:
-- [`docs/DocuPulse_Enterprise_AP_v4.2_Engineering_Report.pdf`](file:///C:/Users/Asus/.gemini/antigravity/scratch/doc_intelligence_engine/docs/DocuPulse_Enterprise_AP_v4.2_Engineering_Report.pdf)
+- [`docs/DocuPulse_Enterprise_AP_v4.3_Engineering_Report.pdf`](file:///C:/Users/Asus/.gemini/antigravity/scratch/doc_intelligence_engine/docs/DocuPulse_Enterprise_AP_v4.3_Engineering_Report.pdf)
 
 ---
 

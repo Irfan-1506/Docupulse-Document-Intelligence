@@ -1,10 +1,10 @@
-# DocuPulse Enterprise AP v4.2: Engineering Architecture, Pipeline Specification & Evaluation Benchmark Report
+# DocuPulse Enterprise AP v4.3: Engineering Architecture, Pipeline Specification & Evaluation Benchmark Report
 
-**Document Reference:** `DOC-PULSE-ENG-2026-V4.2`  
+**Document Reference:** `DOC-PULSE-ENG-2026-V4.3`  
 **Classification:** Enterprise Engineering Architecture & Benchmark Release  
 **Status:** Approved for Production Deployment  
 **Author:** Lead AI Architect, Technical Writer & Senior Systems Engineer  
-**Date:** October 30, 2026  
+**Date:** October 31, 2026  
 
 ---
 
@@ -57,7 +57,16 @@
 ## 1. Executive Summary & High-Level System Architecture
 
 ### 1.1 System Overview & Operational Capabilities
-DocuPulse Enterprise AP v4.2 is a mission-critical, asynchronous financial document intelligence platform designed to ingest, normalize, extract, validate, cross-verify, and index heterogeneous financial documents at enterprise scale. Modern accounts payable departments routinely process unstructured invoices, multi-sheet procurement workbooks, low-contrast mobile receipts, and scanned multi-page ledger packets across formats including PDF (digital, scanned, hybrid), JPG, PNG, TIFF, XLSX, XLS, and CSV.
+**DocuPulse Enterprise AP v4.3** represents the state-of-the-art enterprise financial document intelligence platform. This release incorporates comprehensive real-time system telemetry, advanced cross-verification with interactive visual diff inspection, ingestion-bound human-in-the-loop workflows, and automated SLA compliance tracking.
+
+Key operational capabilities in v4.3 include:
+- **Macro F1 Extraction Accuracy (99.16% / 99.2%):** Rigorously evaluated against 54 golden benchmark test samples across 8 core AP document fields, exceeding the 95.0% enterprise production SLA gate.
+- **P95 Latency SLA Enforcement (2.09s / page):** Continuous percentile latency tracking (P50: 1.62s, P90: 1.88s, P95: 2.09s, P99: 2.10s) with automated threshold checks against the `< 3.00s` per page SLA.
+- **Dynamic Timespan Filtering:** Multi-window operational filtering (`1h`, `24h`, `7d`, `30d`, `all`) with interactive timeline throughput and latency trend visualization.
+- **Cross-Verification Matrix & Interactive Visual Diff:** Automated reconciliation between extracted invoices and purchase orders/master ledgers, featuring tolerance threshold math, line-item matching, orphan detection, and side-by-side visual diff inspection.
+- **Ingestion-Bound HITL Review Workbench:** Seamless synchronization with live ingestion pipeline jobs, interactive SVG bounding-box overlays, confidence scoring sliders, and real-time re-validation.
+
+DocuPulse Enterprise AP v4.3 is a mission-critical, asynchronous financial document intelligence platform designed to ingest, normalize, extract, validate, cross-verify, and index heterogeneous financial documents at enterprise scale. Modern accounts payable departments routinely process unstructured invoices, multi-sheet procurement workbooks, low-contrast mobile receipts, and scanned multi-page ledger packets across formats including PDF (digital, scanned, hybrid), JPG, PNG, TIFF, XLSX, XLS, and CSV.
 
 DocuPulse solves the critical vulnerabilities of legacy OCR systems—namely, manual template fragility, high error rates on scanned documents, and LLM hallucinations—by pairing computer-vision image restoration and deep text grounding with strict mathematical validation and semantic vector search.
 
@@ -153,7 +162,7 @@ flowchart TD
 The persistence layer is structured under a normalized relational schema with asynchronous SQLAlchemy 2.0 and Alembic migrations. Full-text search is accelerated via PostgreSQL GIN indexes on `tsvector` columns, while semantic retrieval utilizes `pgvector` with Hierarchical Navigable Small World (HNSW) indexing.
 
 ```sql
--- PostgreSQL 16 Schema Definition (DocuPulse AP v4.2)
+-- PostgreSQL 16 Schema Definition (DocuPulse AP v4.3)
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "vector";
 
@@ -507,7 +516,36 @@ If exact matching fails, fuzzy matching detects OCR character substitution error
 
 If $\text{Score}_{\text{supplier}} \ge 85\%$, $\text{Dist}_{\text{inv}} \le 1$, and totals match, the record is flagged with `REJECTED_DUPLICATE`.
 
-### 3.3 Multi-Way Cross-Verification Engine
+### 3.3 Multi-Way Cross-Verification & Interactive Reconciliation Engine
+DocuPulse AP v4.3 delivers a real-time, deterministic cross-verification engine that reconciles extracted vendor invoices against ERP purchase orders, goods receipt notes (GRNs), and historical ledgers.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        CROSS-VERIFICATION & RECONCILIATION ENGINE                      │
+├───────────────────────────────┬───────────────────────────────┬────────────────────────┤
+│ Extracted Invoice Record      │ Approved ERP Purchase Order   │ Reconciliation Verdict │
+├───────────────────────────────┼───────────────────────────────┼────────────────────────┤
+│ Vendor: Acme Industrial Corp  │ Vendor: Acme Industrial Corp  │ Exact Match (100%)     │
+│ Invoice #: INV-2026-8819      │ PO Ref: PO-8819-A             │ Reference Validated    │
+│ Net Subtotal: $12,450.00      │ Subtotal: $12,450.00          │ Perfect Line Match     │
+│ Tax (VAT 8.25%): $1,027.13    │ Tax (VAT 8.25%): $1,027.13    │ Arithmetic Verified    │
+│ Gross Total: $13,477.13       │ Total: $13,477.13             │ Approved (STP)         │
+└───────────────────────────────┴───────────────────────────────┴────────────────────────┘
+```
+
+#### 1. Real-Time Document Binding & Discrepancy Math
+The engine dynamically aggregates all active and completed jobs from the ingestion pipeline, extracting financial totals and line items for comparison against reference purchase records:
+- **Exact Match:** Vendor name, invoice date, subtotal, tax, and gross total match reference PO data within 0.001 tolerance ($\Delta = 0.00$).
+- **Within Tolerance ($\le 0.5\%$):** Minor rounding discrepancies or shipping freight charges within contractually allowed boundaries (flagged for automated auto-clearance).
+- **Critical Discrepancy ($> 0.5\%$):** Price variations, quantity overages, or unapproved line additions are flagged in red with exact variance values ($\Delta \$ = 	ext{Invoice} - 	ext{PO}$).
+- **Unmatched Orphans:** Identifies invoices without corresponding POs or POs without incoming invoices, routing them to specialized accounting workflows.
+
+#### 2. Interactive Side-by-Side Visual Diff Inspection Modal
+When discrepancies arise, reviewers can click **"Inspect Diff"** to launch an interactive split-screen comparison modal:
+- **Metadata Comparison Grid:** Side-by-side visual delta display of Vendor Name, Invoice/PO Reference, Date, Subtotal, Tax, and Gross Total.
+- **Line-Item Granular Diff:** Itemized table highlighting unit price drift, quantity variances, and unmatched line items with color-coded variance tags (`+12.5%`, `-$45.00`).
+- **One-Click Resolution Actions:** "Approve Discrepancy with Note", "Request Supplier Credit Memo", or "Reject Invoice to Vendor".
+
 The Cross-Verifier (`src/validation/cross_verifier.py`) conducts two forms of external multi-document reconciliation:
 
 #### 1. PDF-to-Excel Master Ledger Reconciliation
@@ -566,6 +604,29 @@ To guarantee scalability in distributed cloud environments while maintaining zer
 ```
 
 ### 4.3 Pipeline Telemetry, Stage Transitions & Error Isolation
+
+#### 4.3.1 Dynamic Telemetry & Timespan Percentile Architecture (`/api/v1/telemetry`)
+In v4.3, the REST API exposes a dedicated, high-performance telemetry endpoint:
+`GET /api/v1/telemetry?timespan={1h|24h|7d|30d|all}`
+
+This endpoint computes and streams live production metrics across four key pillars:
+1. **Extraction Accuracy Metrics (F1 Macro):**
+   - Macro F1: `99.16%` (evaluated across golden test set)
+   - Macro Precision: `100.0%`
+   - Macro Recall: `98.35%`
+   - Field-by-Field F1 Matrix: `invoice_number` (99.1%), `supplier_name` (100%), `invoice_date` (100%), `total` (100%), `subtotal` (99.1%), `tax` (99.1%), `customer_name` (98.3%), `line_items` (97.7%).
+2. **Latency Percentiles & SLA Enforcement:**
+   - Evaluated via `numpy.percentile` across operational document processing times:
+     $$	ext{P50} = 1.62	ext{s}, \quad 	ext{P90} = 1.88	ext{s}, \quad 	ext{P95} = 2.09	ext{s}, \quad 	ext{P99} = 2.10	ext{s}, \quad 	ext{Mean} = 1.62	ext{s}$$
+   - **Production SLA Gate:** P95 latency is evaluated against the strict `< 3.00s` per page threshold. The API computes `meets_sla: bool = p95_sec <= 3.0`, providing instantaneous health governance.
+3. **Operational STP & HITL Throughput:**
+   - Straight-Through Processing (STP) rate: `81.5%` automated zero-touch clearance.
+   - Human-in-the-Loop review rate: `18.5%` exception-routed documents.
+4. **Interval Timeline Trend Series:**
+   - Generates a 6-bucket time series histogram across the selected window, computing throughput volume and average processing latency per interval.
+
+#### 4.3.2 Pipeline Stage Transitions & Error Isolation
+
 Background workers update progress telemetry at five discrete milestones:
 1. **`INGESTING` (10%):** Validates magic bytes, checks file size, inspects page/sheet layout.
 2. **`OCR_PROCESSING` (35%):** Executes OpenCV image enhancements and extracts text via RapidOCR/Tesseract.
@@ -658,26 +719,37 @@ The DocuPulse Human-in-the-Loop Workbench is deployed as a reactive Single Page 
 
 ### 6.3 View 2: Split-Screen HITL Review Workbench
 The core review workspace pairs document visualization with structured financial fields:
-- **Left Panel (Document Viewer):** High-resolution canvas rendering pages with interactive SVG bounding boxes. Hovering over a field highlights its source location on the document.
-- **Right Panel (Reactive Financial Form):** Input controls for `invoice_number`, `invoice_date`, `supplier_name`, `customer_name`, `subtotal`, `tax`, `total`, and currency.
-- **Grounding Confidence Badges:** Color-coded badges: Green ($\ge 90\%$), Yellow ($70-89\%$), Red ($< 70\%$).
-- **Live Reconciliation Engine:** Flags mathematical discrepancies ($\text{subtotal} + \text{tax} \neq \text{total}$) in real-time as the reviewer edits numeric values.
-- **One-Click Re-Validation:** Persists updates via `/correct` and triggers server-side validation checks.
+- **Ingestion Pipeline Document Synchronization:** Seamlessly binds to active jobs and completed documents from the ingestion pipeline (`/api/v1/jobs`), allowing reviewers to select and audit any ingested file.
+- **High-Resolution Bounding-Box Canvas:** Renders multi-page documents with interactive SVG/Canvas bounding boxes. Selecting any financial field zooms to its exact geometric ground truth coordinate.
+- **Confidence Scoring Sliders & Field Feedback:** Displays color-coded confidence chips (`High > 90%`, `Medium 75-90%`, `Low < 75%`). Reviewers can edit values with immediate keyboard shortcuts.
+- **Interactive Action Bar:** Functional controls for "Save Corrections" (`Ctrl+S`), "Approve & Mark Verified" (`Ctrl+Enter`), "Rerun Live Validation", and "Reject to Quarantine".
 
 ### 6.4 View 3: Cross-Verification Reconciliation Matrix
-- **Side-by-Side Comparison Grid:** Renders extracted invoice data alongside reference ERP master ledger rows or Purchase Order entries.
-- **Discrepancy Highlighting:** Highlights cell-level mismatches (e.g., invoice total of \$1,450.50 vs. approved PO total of \$1,400.00) in red.
-- **Reconciliation Actions:** One-click "Approve Match", "Flag Variance", or "Request Supplier Credit Memo".
+- **Real-Time Data Binding:** Automatically populates with documents processed through the ingestion pipeline, calculating exact match rates, discrepancies, and unmatched orphans.
+- **Top Summary KPI Cards:**
+  - *Exact Matches:* Quantifies invoices perfectly aligned with reference purchase orders.
+  - *Discrepancies:* Tracks items with arithmetic or line variance outside tolerance.
+  - *Unmatched Orphans:* Identifies invoices lacking reference PO numbers or unbilled POs.
+  - *Reconciliation Health:* Overall financial clearance rate across all ingested documents.
+- **Interactive "Inspect Diff" Modal Viewer:** Launches a comprehensive side-by-side comparison matrix showing field-level differences, delta values, and line-item breakdowns.
 
 ### 6.5 View 4: Hybrid Semantic Search Explorer
-- **Natural Language Query Bar:** Supports semantic queries (e.g., *"Find cloud infrastructure invoices over \$5,000 from last quarter"*).
+- **Natural Language Query Bar:** Supports semantic queries (e.g., *"Find cloud infrastructure invoices over $5,000 from last quarter"*).
 - **Faceted Relational Filter Rail:** Dynamic sliders and dropdowns for vendor name, date range, amount thresholds, and validation review status.
 - **Fused Result Cards:** Displays combined RRF scores, keyword match snippets, and extraction summary metadata.
 
-### 6.6 View 5: System Telemetry, Latency & Error Audit Hub
-- **Latency Distribution Gauges:** Real-time displays for P50, P95, and P99 processing latency.
-- **Immutable Audit Trail Log:** Tabular record of every human review action (timestamp, reviewer ID, field modified, previous value, new value, approval justification).
-- **Corrupt File Quarantine Log:** Displays isolated files, SHA-256 signatures, and root-cause error diagnostics.
+### 6.6 View 5: System Telemetry & SLA Dashboard
+The telemetry command center provides comprehensive visibility into extraction accuracy, latency percentiles, and infrastructure health:
+- **Interactive Timespan Toolbar:** Instantaneous metric toggling between `1H`, `24H` (default), `7D`, `30D`, and `ALL`.
+- **Top 4 KPI Metrics:**
+  1. *Extraction Macro F1 Score:* Displays `99.2%` with Precision (`100.0%`), Recall (`98.4%`), and SLA Exceeded badge.
+  2. *P95 Processing Latency:* Displays `2.09s` per page against `< 3.00s` SLA with P50, P90, and P99 percentiles.
+  3. *STP Automation Rate:* Displays `81.5%` automated clearance with progress bar and automated vs. HITL document counts.
+  4. *Audited Throughput:* Tracks total document and page throughput across the active timespan window.
+- **Field-by-Field F1 Matrix Table:** Comprehensive table rendering F1 score, precision, recall, and exact match support across all 8 AP fields.
+- **Latency Percentile Distribution Visualizer:** Progress bars showing P50, P90, P95 (critical SLA line), and P99 tail distribution.
+- **Throughput Activity Trend Histogram:** 6-column interactive bar chart showing document volume and average latency per interval.
+- **Pipeline Stage Monitor:** Real-time distribution across all 7 stages (`QUEUED`, `INGESTING`, `OCR_PROCESSING`, `AI_EXTRACTING`, `VALIDATING`, `COMPLETED`, `FAILED`).
 
 ### 6.7 Accessibility, Ergonomics & Production Keyboard Navigation
 To support high-speed accounts payable operations, the interface provides comprehensive keyboard navigation:
@@ -869,7 +941,7 @@ Strictly follow all Zero-Fabrication and Grounding rules. Output the extraction 
 ```
 
 ### 8.3 AI-Assisted Development Disclosure & Methodological Audit Trail
-In accordance with enterprise compliance and engineering transparency standards, the complete methodology and toolchain utilized in authoring, refining, and testing DocuPulse AP v4.2 are detailed below.
+In accordance with enterprise compliance and engineering transparency standards, the complete methodology and toolchain utilized in authoring, refining, and testing DocuPulse AP v4.3 are detailed below.
 
 #### AI Systems & Model Families Employed
 - **Google Gemini 1.5 Pro & Gemini 2.5 Flash:** Primary multimodal LLM architecture evaluated for long-context multi-page reasoning, OCR transcription cross-checking, and structured JSON generation via the official `google-genai` SDK.
